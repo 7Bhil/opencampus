@@ -1,0 +1,343 @@
+<template>
+    <div class="min-h-screen bg-gray-50">
+        <!-- Navbar Horizontale Fixe -->
+        <header class="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-[#5b7ce6] via-[#9b6ec9] to-[#b567b8] shadow-lg">
+            <div class="mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex h-16 justify-between items-center">
+                    <!-- Logo -->
+                    <Link href="/dashboard" class="flex items-center gap-2 sm:gap-3 text-white text-xl sm:text-2xl font-bold hover:opacity-90 transition-opacity">
+                        <span class="text-2xl sm:text-3xl">🎓</span>
+                        <span class="hidden sm:inline">OpenCampus</span>
+                        <span class="sm:hidden">OC</span>
+                    </Link>
+
+                    <!-- Navigation Desktop -->
+                    <nav class="hidden md:flex gap-4 lg:gap-8 items-center">
+                        <Link
+                            :href="route('dashboard.redirect')"
+                            class="text-white font-medium hover:opacity-85 transition-opacity text-sm lg:text-base"
+                            :class="{ 'border-b-2 border-white': $page.url === '/dashboard' }"
+                        >
+                            Accueil
+                        </Link>
+                        <Link
+                            :href="route('etudiant.courses')"
+                            class="text-white font-medium hover:opacity-85 transition-opacity text-sm lg:text-base"
+                            :class="{ 'border-b-2 border-white': $page.url.startsWith('/etudiant/courses') }"
+                        >
+                            Mes cours
+                        </Link>
+                        <Link
+                            :href="route('etudiant.assignments')"
+                            class="text-white font-medium hover:opacity-85 transition-opacity text-sm lg:text-base"
+                            :class="{ 'border-b-2 border-white': $page.url.startsWith('/etudiant/assignments') }"
+                        >
+                            Devoirs
+                        </Link>
+                        <Link
+                            href="/premium"
+                            class="text-white font-medium hover:opacity-85 transition-opacity text-sm lg:text-base"
+                            :class="{ 'border-b-2 border-white': $page.url.startsWith('/premium') }"
+                        >
+                            Premium
+                        </Link>
+
+                        <!-- Avatar utilisateur avec dropdown -->
+                        <div class="relative">
+                            <button
+                                @click="toggleUserMenu"
+                                class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-[#5b7ce6] font-bold text-sm hover:scale-105 transition-transform"
+                            >
+                                {{ userInitial }}
+                            </button>
+
+                            <!-- Dropdown menu -->
+                            <div
+                                v-show="showUserMenu"
+                                class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 border border-gray-100 z-50"
+                            >
+                                <Link
+                                    :href="route('profile.edit')"
+                                    class="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors"
+                                    @click="closeAllMenus"
+                                >
+                                    <span>👤</span>
+                                    <span>Mon profil</span>
+                                </Link>
+                                <Link
+                                    :href="route('settings')"
+                                    class="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors"
+                                    @click="closeAllMenus"
+                                >
+                                    <span>⚙️</span>
+                                    <span>Paramètres</span>
+                                </Link>
+                                <hr class="my-2 border-gray-200">
+                                <Link
+                                    :href="route('logout')"
+                                    method="post"
+                                    as="button"
+                                    class="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-50 transition-colors w-full text-left"
+                                    @click="closeAllMenus"
+                                >
+                                    <span>🚪</span>
+                                    <span>Déconnexion</span>
+                                </Link>
+                            </div>
+                        </div>
+                    </nav>
+
+                    <!-- Hamburger Menu Mobile -->
+                    <div class="md:hidden flex items-center">
+                        <button
+                            @click="toggleMobileMenu"
+                            class="inline-flex items-center justify-center p-2 rounded-md text-white hover:bg-white/10 transition duration-150 ease-in-out"
+                            aria-label="Menu principal"
+                        >
+                            <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                                <path
+                                    v-show="!showMobileMenu"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M4 6h16M4 12h16M4 18h16"
+                                />
+                                <path
+                                    v-show="showMobileMenu"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12"
+                                />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Menu Mobile Déroulant -->
+            <Transition
+                enter-active-class="transition ease-out duration-200"
+                enter-from-class="opacity-0 transform -translate-y-2"
+                enter-to-class="opacity-100 transform translate-y-0"
+                leave-active-class="transition ease-in duration-150"
+                leave-from-class="opacity-100 transform translate-y-0"
+                leave-to-class="opacity-0 transform -translate-y-2"
+            >
+                <div
+                    v-show="showMobileMenu"
+                    class="md:hidden bg-white/10 backdrop-blur-sm border-t border-white/20"
+                >
+                    <div class="space-y-1 px-4 pb-3 pt-2">
+                        <Link
+                            :href="route('dashboard.redirect')"
+                            class="block px-3 py-2 rounded-md text-white font-medium hover:bg-white/20 transition-colors"
+                            @click="closeMobileMenu"
+                        >
+                            📊 Tableau de bord
+                        </Link>
+                        <Link
+                            :href="route('etudiant.courses')"
+                            class="block px-3 py-2 rounded-md text-white font-medium hover:bg-white/20 transition-colors"
+                            @click="closeMobileMenu"
+                        >
+                            📚 Cours
+                        </Link>
+                        <Link
+                            :href="route('etudiant.assignments')"
+                            class="block px-3 py-2 rounded-md text-white font-medium hover:bg-white/20 transition-colors"
+                            @click="closeMobileMenu"
+                        >
+                            📝 Mes devoirs
+                        </Link>
+                        <Link
+                            href="/premium"
+                            class="block px-3 py-2 rounded-md text-white font-medium hover:bg-white/20 transition-colors"
+                            @click="closeMobileMenu"
+                        >
+                            💎 Premium
+                        </Link>
+                        <Link
+                            href="/notifications"
+                            class="block px-3 py-2 rounded-md text-white font-medium hover:bg-white/20 transition-colors"
+                            @click="closeMobileMenu"
+                        >
+                            🔔 Notifications
+                        </Link>
+                        <Link
+                            :href="route('profile.edit')"
+                            class="block px-3 py-2 rounded-md text-white font-medium hover:bg-white/20 transition-colors"
+                            @click="closeMobileMenu"
+                        >
+                            👤 Mon profil
+                        </Link>
+                        <Link
+                            :href="route('settings')"
+                            class="block px-3 py-2 rounded-md text-white font-medium hover:bg-white/20 transition-colors"
+                            @click="closeMobileMenu"
+                        >
+                            ⚙️ Paramètres
+                        </Link>
+                        <hr class="my-2 border-white/20">
+                        <Link
+                            :href="route('logout')"
+                            method="post"
+                            as="button"
+                            class="block w-full text-left px-3 py-2 rounded-md text-red-300 font-medium hover:bg-red-500/20 transition-colors"
+                            @click="closeMobileMenu"
+                        >
+                            🚪 Déconnexion
+                        </Link>
+                    </div>
+                </div>
+            </Transition>
+        </header>
+
+        <!-- Container Principal -->
+        <div class="flex min-h-screen pt-16">
+            <!-- Sidebar Verticale (Desktop uniquement) -->
+            <aside class="hidden lg:block fixed left-0 top-16 bottom-0 w-64 bg-white shadow-lg overflow-y-auto z-40">
+                <div class="p-4 lg:p-6 space-y-2">
+                    <Link
+                        :href="route('dashboard.redirect')"
+                        class="flex items-center gap-3 p-3 rounded-xl transition-all font-medium"
+                        :class="isActive('/dashboard') ? 'bg-[#5b7ce6] text-white' : 'text-gray-600 hover:bg-gray-100'"
+                    >
+                        <span class="text-xl">📊</span>
+                        <span class="text-sm lg:text-base">Tableau de bord</span>
+                    </Link>
+
+                    <Link
+                        :href="route('etudiant.courses')"
+                        class="flex items-center gap-3 p-3 rounded-xl transition-all font-medium"
+                        :class="isActive('/etudiant/courses') ? 'bg-[#5b7ce6] text-white' : 'text-gray-600 hover:bg-gray-100'"
+                    >
+                        <span class="text-xl">📚</span>
+                        <span class="text-sm lg:text-base">Mes cours</span>
+                    </Link>
+
+                    <Link
+                        :href="route('etudiant.assignments')"
+                        class="flex items-center gap-3 p-3 rounded-xl transition-all font-medium"
+                        :class="isActive('/etudiant/assignments') ? 'bg-[#5b7ce6] text-white' : 'text-gray-600 hover:bg-gray-100'"
+                    >
+                        <span class="text-xl">📝</span>
+                        <span class="text-sm lg:text-base">Mes devoirs</span>
+                    </Link>
+
+                    <Link
+                        href="/premium"
+                        class="flex items-center gap-3 p-3 rounded-xl transition-all font-medium"
+                        :class="isActive('/premium') ? 'bg-[#5b7ce6] text-white' : 'text-gray-600 hover:bg-gray-100'"
+                    >
+                        <span class="text-xl">💎</span>
+                        <span class="text-sm lg:text-base">Premium</span>
+                    </Link>
+
+                    <Link
+                        href="/notifications"
+                        class="flex items-center gap-3 p-3 rounded-xl transition-all font-medium"
+                        :class="isActive('/notifications') ? 'bg-[#5b7ce6] text-white' : 'text-gray-600 hover:bg-gray-100'"
+                    >
+                        <span class="text-xl">🔔</span>
+                        <span class="text-sm lg:text-base">Notifications</span>
+                    </Link>
+
+                    <Link
+                        :href="route('profile.edit')"
+                        class="flex items-center gap-3 p-3 rounded-xl transition-all font-medium"
+                        :class="isActive('/profile') ? 'bg-[#5b7ce6] text-white' : 'text-gray-600 hover:bg-gray-100'"
+                    >
+                        <span class="text-xl">👤</span>
+                        <span class="text-sm lg:text-base">Mon profil</span>
+                    </Link>
+
+                    <Link
+                        :href="route('settings')"
+                        class="flex items-center gap-3 p-3 rounded-xl transition-all font-medium"
+                        :class="isActive('/settings') ? 'bg-[#5b7ce6] text-white' : 'text-gray-600 hover:bg-gray-100'"
+                    >
+                        <span class="text-xl">⚙️</span>
+                        <span class="text-sm lg:text-base">Paramètres</span>
+                    </Link>
+                </div>
+            </aside>
+
+            <!-- Contenu Principal -->
+            <main class="flex-1 lg:ml-64 min-h-screen bg-gray-50 w-full">
+                <div class="p-3 sm:p-4 md:p-6 lg:p-8 w-full max-w-full">
+                    <slot />
+                </div>
+            </main>
+        </div>
+    </div>
+</template>
+
+<script setup>
+import { Link, usePage } from '@inertiajs/vue3';
+import { computed, ref, onMounted, onUnmounted } from 'vue';
+
+// États des menus
+const showMobileMenu = ref(false);
+const showUserMenu = ref(false);
+
+// Accès aux props Inertia
+const page = usePage();
+
+// Initiale de l'utilisateur
+const userInitial = computed(() => {
+    const user = page.props.auth?.user;
+    return user?.name?.charAt(0).toUpperCase() || 'U';
+});
+
+// Vérifier si une route est active
+const isActive = (route) => {
+    if (route === '/dashboard') {
+        return page.url === '/dashboard';
+    }
+    return page.url.startsWith(route);
+};
+
+// Gestion des menus
+const toggleMobileMenu = () => {
+    showMobileMenu.value = !showMobileMenu.value;
+    showUserMenu.value = false;
+};
+
+const toggleUserMenu = () => {
+    showUserMenu.value = !showUserMenu.value;
+    showMobileMenu.value = false;
+};
+
+const closeMobileMenu = () => {
+    showMobileMenu.value = false;
+};
+
+const closeAllMenus = () => {
+    showMobileMenu.value = false;
+    showUserMenu.value = false;
+};
+
+// Fermer les menus lors du clic à l'extérieur
+const handleClickOutside = (event) => {
+    if (!event.target.closest('.relative') && !event.target.closest('.md\\:hidden')) {
+        showUserMenu.value = false;
+        showMobileMenu.value = false;
+    }
+};
+
+// Fermer les menus lors du scroll
+const handleScroll = () => {
+    closeAllMenus();
+};
+
+onMounted(() => {
+    document.addEventListener('click', handleClickOutside);
+    window.addEventListener('scroll', handleScroll);
+});
+
+onUnmounted(() => {
+    document.removeEventListener('click', handleClickOutside);
+    window.removeEventListener('scroll', handleScroll);
+});
+</script>

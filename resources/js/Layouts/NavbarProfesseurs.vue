@@ -139,7 +139,11 @@
                     <Link
                         :href="route('professeur.cours.index')"
                         class="sidebar-item group"
-                        :class="{ 'active': $page.url.startsWith('/professeur/cours') }"
+                        :class="{
+        'active': $page.url === '/professeur/cours' ||
+                  $page.url.startsWith('/professeur/cours/') &&
+                  !$page.url.startsWith('/professeur/cours/create')
+    }"
                     >
                         <span class="sidebar-icon">📚</span>
                         <span class="sidebar-label">Mes cours</span>

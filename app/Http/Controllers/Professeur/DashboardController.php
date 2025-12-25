@@ -13,17 +13,26 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        // Vérification du rôle
+        $user = auth()->user();
+        if ($user->account_type !== 'Professeur' && $user->account_type !== 'Admin') {
+            return redirect()->route('dashboard.redirect');
+        }
+
         $professeurId = auth()->id();
 
-        // Statistiques RÉELLES - avec des valeurs par défaut
+        // Statistiques RÉELLES
         $stats = [
             'total_cours' => Cours::where('professeur_id', $professeurId)->count(),
             'total_devoirs' => Devoir::where('professeur_id', $professeurId)->count(),
-            'total_etudiants' => User::where('account_type', 'etudiant')->count() ?: 0,
+            'total_etudiants' => User::where('account_type', 'etudiant')->count(),
             'a_corriger' => Soumission::whereHas('devoir', function($query) use ($professeurId) {
                 $query->where('professeur_id', $professeurId);
-            })->where('statut', 'en_attente')->count() ?: 0,
+            })->where('statut', 'en_attente')->count(),
         ];
+
+        // Pour déboguer temporairement, ajoutez ce dd() :
+        // dd($stats);
 
         // Devoirs soumis RÉCENTS
         $devoirsRecents = Soumission::whereHas('devoir', function($query) use ($professeurId) {
@@ -35,13 +44,13 @@ class DashboardController extends Controller
             ->get()
             ->map(function($soumission) {
                 return [
+                    'id' => $soumission->id,
                     'etudiant' => $soumission->etudiant->name ?? 'Étudiant inconnu',
                     'filiere' => $soumission->etudiant->filiere ?? 'Non spécifié',
                     'titre' => $soumission->devoir->titre ?? 'Devoir inconnu',
                     'matiere' => $soumission->devoir->matiere ?? 'Non spécifié',
                     'date' => $soumission->created_at->format('d M Y'),
                     'statut' => $this->getStatutText($soumission->statut),
-                    'soumission_id' => $soumission->id,
                     'devoir_id' => $soumission->devoir_id,
                 ];
             })->toArray();
@@ -53,6 +62,7 @@ class DashboardController extends Controller
             ->get()
             ->map(function($cours) {
                 return [
+                    'id' => $cours->id,
                     'titre' => $cours->titre,
                     'type' => $cours->type ?? 'Cours',
                     'filiere' => $cours->filiere ?? 'Toutes filières',

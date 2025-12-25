@@ -8,6 +8,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Professeur\DashboardController; // ← AJOUTEZ CETTE LIGNE
 
 /*
 |--------------------------------------------------------------------------
@@ -117,7 +118,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     |--------------------------------------------------------------------------
     */
     Route::prefix('professeur')->name('professeur.')->group(function () {
-            Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
 
         // Routes pour les cours des professeurs

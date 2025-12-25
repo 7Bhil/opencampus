@@ -78,17 +78,15 @@ class DevoirController extends Controller
      */
     public function store(Request $request)
     {
-
-    $validated = $request->validate([
-        'titre' => 'required|string|max:255',
-        'matiere' => 'required|string|max:100',
-        'description' => 'nullable|string',
-        'fichier' => 'required|file|mimes:pdf,doc,docx,txt|max:5120',
-        'date_limite' => 'required|date|after:now',
-        'points' => 'required|integer|min:1|max:20',  // Valide 'points'
-        'est_actif' => 'boolean',
-    ]);
-
+        $validated = $request->validate([
+            'titre' => 'required|string|max:255',
+            'matiere' => 'required|string|max:100',
+            'description' => 'nullable|string',
+            'fichier' => 'required|file|mimes:pdf,doc,docx,txt|max:5120',
+            'date_limite' => 'required|date|after:now',
+            'points' => 'required|integer|min:1|max:20',
+            'est_actif' => 'boolean',
+        ]);
 
         $validated['professeur_id'] = auth()->id();
 
@@ -109,17 +107,26 @@ class DevoirController extends Controller
      */
     public function show(Devoir $devoir)
     {
-        $this->authorize('view', $devoir);
+        // Vérification manuelle au lieu de $this->authorize()
+        if ($devoir->professeur_id !== auth()->id()) {
+            abort(403, 'Vous n\'êtes pas autorisé à voir ce devoir.');
+        }
 
-        $devoir->load([
-            'soumissions' => function ($query) {
-                $query->with('eleve:id,nom,prenom')
-                    ->latest();
-            }
-        ]);
+        // Chargez les soumissions avec l'étudiant
+        $devoir->load(['soumissions.etudiant']);
+
+        // Calcul des statistiques
+        $stats = [
+            'total_soumissions' => $devoir->soumissions()->count(),
+            'soumissions_en_attente' => $devoir->soumissions()->where('statut', 'en_attente')->count(),
+            'soumissions_corrigees' => $devoir->soumissions()->where('statut', 'corrige')->count(),
+            'moyenne' => $devoir->soumissions()->whereNotNull('note')->avg('note'),
+        ];
 
         return Inertia::render('Professeurs/Devoirs/Show', [
             'devoir' => $devoir,
+            'soumissions' => $devoir->soumissions,
+            'stats' => $stats,
         ]);
     }
 
@@ -128,7 +135,10 @@ class DevoirController extends Controller
      */
     public function edit(Devoir $devoir)
     {
-        $this->authorize('update', $devoir);
+        // Vérification manuelle au lieu de $this->authorize()
+        if ($devoir->professeur_id !== auth()->id()) {
+            abort(403, 'Vous n\'êtes pas autorisé à modifier ce devoir.');
+        }
 
         return Inertia::render('Professeurs/Devoirs/Edit', [
             'devoir' => $devoir,
@@ -139,41 +149,45 @@ class DevoirController extends Controller
      * Met à jour un devoir
      */
     public function update(Request $request, Devoir $devoir)
-    {
-        $this->authorize('update', $devoir);
-
-        $validated = $request->validate([
-            'titre' => 'required|string|max:255',
-            'description' => 'required|string',
-            'matiere' => 'required|string|max:100',
-            'date_limite' => 'required|date',
-            'note_maximale' => 'required|numeric|min:0|max:100',
-            'est_actif' => 'boolean',
-            'fichier' => 'nullable|file|max:10240|mimes:pdf,doc,docx,txt,zip',
-        ]);
-
-        // Gestion du nouveau fichier
-        if ($request->hasFile('fichier')) {
-            // Suppression de l'ancien fichier
-            if ($devoir->fichier_path) {
-                Storage::disk('public')->delete($devoir->fichier_path);
-            }
-            $validated['fichier_path'] = $request->file('fichier')->store('devoirs', 'public');
-        }
-
-        $devoir->update($validated);
-
-        return redirect()
-            ->route('professeur.devoirs.show', $devoir)
-            ->with('success', 'Devoir mis à jour avec succès.');
+{
+    if ($devoir->professeur_id !== auth()->id()) {
+        abort(403, 'Vous n\'êtes pas autorisé à modifier ce devoir.');
     }
 
+    $validated = $request->validate([
+        'titre' => 'required|string|max:255',
+        'description' => 'required|string',
+        'matiere' => 'required|string|max:100',
+        'date_limite' => 'required|date',
+        'points' => 'required|integer|min:1|max:100',
+        'est_actif' => 'boolean',
+        'fichier' => 'nullable|file|max:10240|mimes:pdf,doc,docx,txt,zip',
+    ]);
+
+    // Gestion du nouveau fichier
+    if ($request->hasFile('fichier')) {
+        // Suppression de l'ancien fichier
+        if ($devoir->fichier_path) {
+            Storage::disk('public')->delete($devoir->fichier_path);
+        }
+        $validated['fichier_path'] = $request->file('fichier')->store('devoirs', 'public');
+    }
+
+    $devoir->update($validated);
+
+    return redirect()
+        ->route('professeur.devoirs.show', $devoir)
+        ->with('success', 'Devoir mis à jour avec succès.');
+}
     /**
      * Supprime un devoir
      */
     public function destroy(Devoir $devoir)
     {
-        $this->authorize('delete', $devoir);
+        // Vérification manuelle au lieu de $this->authorize()
+        if ($devoir->professeur_id !== auth()->id()) {
+            abort(403, 'Vous n\'êtes pas autorisé à supprimer ce devoir.');
+        }
 
         // Suppression du fichier associé
         if ($devoir->fichier_path) {
@@ -199,7 +213,10 @@ class DevoirController extends Controller
      */
     public function toggleStatus(Devoir $devoir)
     {
-        $this->authorize('update', $devoir);
+        // Vérification manuelle au lieu de $this->authorize()
+        if ($devoir->professeur_id !== auth()->id()) {
+            abort(403, 'Vous n\'êtes pas autorisé à modifier ce devoir.');
+        }
 
         $devoir->update([
             'est_actif' => !$devoir->est_actif

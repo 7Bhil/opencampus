@@ -26,7 +26,7 @@
                         Mes publications
                     </Link>
                     <Link
-                        :href="route('professeur.dashboard')"
+                        :href="route('professeur.devoirs.index')"
                         class="nav-link hover:text-indigo-200 transition-colors duration-200"
                         :class="{ 'active': $page.url.startsWith('/professeur/devoirs') }"
                     >
@@ -146,9 +146,9 @@
                     </Link>
 
                     <Link
-                        :href="route('professeur.devoirs.index')"
+                        :href="route('professeur.cours.create')"
                         class="sidebar-item group"
-                        :class="{ 'active': $page.url === '/professeur/publier' }"
+                        :class="{ 'active': $page.url.startsWith('/professeur/cours/create') }"
                     >
                         <span class="sidebar-icon">📝</span>
                         <span class="sidebar-label">Publier</span>

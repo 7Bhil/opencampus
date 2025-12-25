@@ -1,63 +1,54 @@
 <?php
-// app/Http/Controllers/Professeur/SoumissionController.php
 
 namespace App\Http\Controllers\Professeur;
 
 use App\Http\Controllers\Controller;
 use App\Models\Soumission;
-use App\Models\Devoir;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
 
 class SoumissionController extends Controller
 {
-    public function corriger(Soumission $soumission, Request $request)
-    {
-        $devoir = $soumission->devoir;
-
-        if ($devoir->professeur_id !== auth()->id()) {
-            abort(403);
-        }
-
-        $validated = $request->validate([
-            'note' => 'required|numeric|min:0|max:' . $devoir->points,
-            'commentaire' => 'nullable|string|max:1000',
-        ]);
-
-        $validated['corrige_par'] = auth()->id();
-        $validated['date_correction'] = now();
-        $validated['statut'] = 'corrige';
-
-        $soumission->update($validated);
-
-        return redirect()->back()
-            ->with('success', 'Soumission corrigée avec succès !');
-    }
-
     public function download(Soumission $soumission)
     {
-        $devoir = $soumission->devoir;
+        $this->authorize('view', $soumission->devoir);
 
-        if ($devoir->professeur_id !== auth()->id()) {
-            abort(403);
+        if (!Storage::disk('public')->exists($soumission->fichier_path)) {
+            abort(404, 'Fichier non trouvé');
         }
 
         return Storage::disk('public')->download($soumission->fichier_path);
     }
 
+    public function corriger(Request $request, Soumission $soumission)
+    {
+        $this->authorize('update', $soumission->devoir);
+
+        $validated = $request->validate([
+            'note' => 'required|numeric|min:0|max:' . $soumission->devoir->points,
+            'commentaire' => 'nullable|string|max:1000',
+        ]);
+
+        $soumission->update([
+            'note' => $validated['note'],
+            'commentaire' => $validated['commentaire'],
+            'statut' => 'corrige',
+            'correcteur_id' => auth()->id(),
+        ]);
+
+        return back()->with('success', 'Soumission corrigée avec succès.');
+    }
+
     public function destroy(Soumission $soumission)
     {
-        $devoir = $soumission->devoir;
+        $this->authorize('delete', $soumission->devoir);
 
-        if ($devoir->professeur_id !== auth()->id()) {
-            abort(403);
+        if ($soumission->fichier_path) {
+            Storage::disk('public')->delete($soumission->fichier_path);
         }
 
-        Storage::disk('public')->delete($soumission->fichier_path);
         $soumission->delete();
 
-        return redirect()->back()
-            ->with('success', 'Soumission supprimée avec succès !');
+        return back()->with('success', 'Soumission supprimée avec succès.');
     }
 }

@@ -148,11 +148,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::delete('/{devoir}', [DevoirController::class, 'destroy'])->name('destroy');
 
             // Routes pour les soumissions
-            Route::prefix('{devoir}/soumissions')->group(function () {
-                Route::post('/{soumission}/corriger', [SoumissionController::class, 'corriger'])->name('soumissions.corriger');
-                Route::get('/{soumission}/download', [SoumissionController::class, 'download'])->name('soumissions.download');
-                Route::delete('/{soumission}', [SoumissionController::class, 'destroy'])->name('soumissions.destroy');
-            });
+             Route::prefix('{devoir}/soumissions')->group(function () {
+        Route::get('/{soumission}/download', [SoumissionController::class, 'download'])->name('soumissions.download');
+        Route::post('/{soumission}/corriger', [SoumissionController::class, 'corriger'])->name('soumissions.corriger');
+        Route::delete('/{soumission}', [SoumissionController::class, 'destroy'])->name('soumissions.destroy');
+    });
         });
     });
 

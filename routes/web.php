@@ -117,14 +117,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     |--------------------------------------------------------------------------
     */
     Route::prefix('professeur')->name('professeur.')->group(function () {
-        Route::get('/dashboard', function () {
-            // Vérification manuelle du rôle
-            $user = Auth::user();
-            if ($user->account_type !== 'Professeur' && $user->account_type !== 'Admin') {
-                return redirect()->route('dashboard.redirect');
-            }
-            return Inertia::render('Professeurs/DashboardProfesseurs');
-        })->name('dashboard');
+            Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
 
         // Routes pour les cours des professeurs
         Route::prefix('cours')->name('cours.')->group(function () {

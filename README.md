@@ -274,6 +274,7 @@ Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
 - [GNIKPO Jean-Paul](https://github.com/JeanPaulGnikpo)
 - [YEKEDO Marielle](https://github.com/)
 - [Bhil .CHITOU](https://github.com/7Bhil)
+- [HOUNGUE Jolidon](https://github.com/joboy05)
 - Tous les contributeurs et testeurs
 
 ## 📞 Support
@@ -281,7 +282,7 @@ Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
 Pour le support, veuillez :
 1. Vérifier la [documentation](#)
 2. Ouvrir un [issue](https://github.com/votre-username/opencampus/issues)
-3. Contacter l'équipe à support@opencampus.com
+3. Contacter l'équipe à 7bhilal.chitou7@gmail.com
 
 ---
 

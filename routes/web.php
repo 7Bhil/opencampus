@@ -9,6 +9,7 @@ use App\Http\Controllers\Etudiant\CoursController as EtudiantCoursController;
 use App\Http\Controllers\Etudiant\DevoirController as EtudiantDevoirController;
 use App\Http\Controllers\Professeur\DashboardController as ProfesseurDashboardController;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
 /*
 |--------------------------------------------------------------------------
@@ -65,6 +66,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/', [EtudiantDevoirController::class, 'index'])->name('index');
             Route::get('/{devoir}', [EtudiantDevoirController::class, 'show'])->name('show');
             Route::post('/{devoir}/soumettre', [EtudiantDevoirController::class, 'soumettre'])->name('soumettre');
+            // Dans votre groupe de routes devoirs
+            Route::get('/{devoir}/download', [EtudiantDevoirController::class, 'download'])->name('devoirs.download');
         });
 
         // Autres routes étudiantes...
@@ -120,11 +123,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->name('professeur.devoirs.toggle-actif');
 
             // Routes pour les soumissions
-            Route::prefix('{devoir}/soumissions')->group(function () {
-                Route::get('/{soumission}/download', [SoumissionController::class, 'download'])->name('soumissions.download');
-                Route::post('/{soumission}/corriger', [SoumissionController::class, 'corriger'])->name('soumissions.corriger');
-                Route::delete('/{soumission}', [SoumissionController::class, 'destroy'])->name('soumissions.destroy');
-            });
+            Route::prefix('{devoir}/soumissions')->name('soumissions.')->group(function () {
+            Route::get('/{soumission}/download', [SoumissionController::class, 'download'])
+                ->name('download');
+            Route::post('/{soumission}/corriger', [SoumissionController::class, 'corriger'])
+                ->name('corriger');
+            Route::delete('/{soumission}', [SoumissionController::class, 'destroy'])
+                ->name('destroy');
+        });
         });
     });
 

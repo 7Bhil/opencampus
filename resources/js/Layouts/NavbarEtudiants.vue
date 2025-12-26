@@ -16,7 +16,7 @@
                         <Link
                             :href="route('dashboard.redirect')"
                             class="text-white font-medium hover:opacity-85 transition-opacity text-sm lg:text-base"
-                            :class="{ 'border-b-2 border-white': $page.url === '/dashboard' }"
+                            :class="{ 'border-b-2 border-white': $page.url.startsWith('/etudiant/dashboard') }"
                         >
                             Accueil
                         </Link>
@@ -35,9 +35,9 @@
                             Devoirs
                         </Link>
                         <Link
-                            href="/premium"
+                            :href="route('etudiant.premium')"
                             class="text-white font-medium hover:opacity-85 transition-opacity text-sm lg:text-base"
-                            :class="{ 'border-b-2 border-white': $page.url.startsWith('/premium') }"
+                            :class="{ 'border-b-2 border-white': $page.url.startsWith('/etudiant/premium') }"
                         >
                             Premium
                         </Link>
@@ -226,18 +226,18 @@
                     </Link>
 
                     <Link
-                        href="/premium"
+                        :href="route('etudiant.premium')"
                         class="flex items-center gap-3 p-3 rounded-xl transition-all font-medium"
-                        :class="isActive('/premium') ? 'bg-[#5b7ce6] text-white' : 'text-gray-600 hover:bg-gray-100'"
+                        :class="isActive('/etudiant/premium') ? 'bg-[#5b7ce6] text-white' : 'text-gray-600 hover:bg-gray-100'"
                     >
                         <span class="text-xl">💎</span>
                         <span class="text-sm lg:text-base">Premium</span>
                     </Link>
 
                     <Link
-                        href="/notifications"
+                        :href="route('etudiant.notifications')"
                         class="flex items-center gap-3 p-3 rounded-xl transition-all font-medium"
-                        :class="isActive('/notifications') ? 'bg-[#5b7ce6] text-white' : 'text-gray-600 hover:bg-gray-100'"
+                        :class="isActive('/etudiant/notifications') ? 'bg-[#5b7ce6] text-white' : 'text-gray-600 hover:bg-gray-100'"
                     >
                         <span class="text-xl">🔔</span>
                         <span class="text-sm lg:text-base">Notifications</span>

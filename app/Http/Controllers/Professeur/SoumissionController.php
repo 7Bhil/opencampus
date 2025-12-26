@@ -3,48 +3,87 @@
 namespace App\Http\Controllers\Professeur;
 
 use App\Http\Controllers\Controller;
+use App\Models\Devoir;
 use App\Models\Soumission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class SoumissionController extends Controller
 {
-    public function download(Soumission $soumission)
+    /**
+     * Télécharger le fichier de soumission
+     */
+    public function download(Devoir $devoir, Soumission $soumission)
     {
-        $this->authorize('view', $soumission->devoir);
-
-        if (!Storage::disk('public')->exists($soumission->fichier_path)) {
-            abort(404, 'Fichier non trouvé');
+        // Vérifier que la soumission appartient bien au devoir
+        if ($soumission->devoir_id !== $devoir->id) {
+            abort(404);
         }
 
-        return Storage::disk('public')->download($soumission->fichier_path);
+        // Vérifier les permissions
+        if ($devoir->professeur_id !== auth()->id()) {
+            abort(403);
+        }
+
+        // Vérifier si le fichier existe
+        if (!Storage::exists($soumission->fichier_path)) {
+            abort(404);
+        }
+
+        return Storage::download($soumission->fichier_path);
     }
 
-    public function corriger(Request $request, Soumission $soumission)
+    /**
+     * Corriger une soumission
+     */
+    public function corriger(Request $request, Devoir $devoir, Soumission $soumission)
     {
-        $this->authorize('update', $soumission->devoir);
+        // Vérifier que la soumission appartient bien au devoir
+        if ($soumission->devoir_id !== $devoir->id) {
+            abort(404);
+        }
 
+        // Vérifier les permissions
+        if ($devoir->professeur_id !== auth()->id()) {
+            abort(403);
+        }
+
+        // Valider les données
         $validated = $request->validate([
-            'note' => 'required|numeric|min:0|max:' . $soumission->devoir->points,
+            'note' => 'required|numeric|min:0|max:' . $devoir->points,
             'commentaire' => 'nullable|string|max:1000',
         ]);
 
+        // Mettre à jour la soumission
         $soumission->update([
             'note' => $validated['note'],
-            'commentaire' => $validated['commentaire'],
+            'commentaire' => $validated['commentaire'] ?? null,
+            'corrige_par' => auth()->id(),
+            'date_correction' => now(),
             'statut' => 'corrige',
-            'correcteur_id' => auth()->id(),
         ]);
 
         return back()->with('success', 'Soumission corrigée avec succès.');
     }
 
-    public function destroy(Soumission $soumission)
+    /**
+     * Supprimer une soumission
+     */
+    public function destroy(Devoir $devoir, Soumission $soumission)
     {
-        $this->authorize('delete', $soumission->devoir);
+        // Vérifier que la soumission appartient bien au devoir
+        if ($soumission->devoir_id !== $devoir->id) {
+            abort(404);
+        }
 
-        if ($soumission->fichier_path) {
-            Storage::disk('public')->delete($soumission->fichier_path);
+        // Vérifier les permissions
+        if ($devoir->professeur_id !== auth()->id()) {
+            abort(403);
+        }
+
+        // Supprimer le fichier si nécessaire
+        if (Storage::exists($soumission->fichier_path)) {
+            Storage::delete($soumission->fichier_path);
         }
 
         $soumission->delete();

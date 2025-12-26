@@ -16,7 +16,7 @@
                     </Link>
                 </div>
 
-                <!-- En-tête -->
+                <!-- En-tête du devoir -->
                 <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
                     <div class="flex justify-between items-start">
                         <div>
@@ -56,7 +56,7 @@
                         <p class="text-gray-700">{{ devoir.description || 'Aucune description fournie.' }}</p>
                     </div>
 
-                    <!-- Infos -->
+                    <!-- Informations -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6 pt-6 border-t">
                         <div>
                             <h4 class="text-sm font-medium text-gray-500">Date limite</h4>
@@ -91,7 +91,7 @@
                     </div>
                 </div>
 
-                <!-- Stats -->
+                <!-- Statistiques -->
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
                     <div class="bg-white p-6 rounded-xl shadow">
                         <p class="text-gray-500">Soumissions totales</p>
@@ -113,7 +113,7 @@
                     </div>
                 </div>
 
-                <!-- Soumissions -->
+                <!-- Liste des soumissions -->
                 <div class="bg-white rounded-xl shadow-lg overflow-hidden">
                     <div class="px-6 py-4 border-b border-gray-200">
                         <h2 class="text-xl font-bold text-gray-900">Soumissions des étudiants</h2>
@@ -211,30 +211,18 @@
                                             <button
                                                 @click="telechargerSoumission(soumission)"
                                                 class="text-blue-600 hover:text-blue-900"
-                                                title="Télécharger"
                                             >
                                                 Télécharger
                                             </button>
                                             <button
-                                                v-if="soumission.statut === 'en_attente'"
                                                 @click="ouvrirModalCorrection(soumission)"
-                                                class="text-green-600 hover:text-green-900"
-                                                title="Corriger"
+                                                :class="soumission.statut === 'en_attente' ? 'text-green-600 hover:text-green-900' : 'text-yellow-600 hover:text-yellow-900'"
                                             >
-                                                Corriger
-                                            </button>
-                                            <button
-                                                v-else
-                                                @click="ouvrirModalCorrection(soumission)"
-                                                class="text-yellow-600 hover:text-yellow-900"
-                                                title="Modifier la note"
-                                            >
-                                                Modifier
+                                                {{ soumission.statut === 'en_attente' ? 'Corriger' : 'Modifier' }}
                                             </button>
                                             <button
                                                 @click="supprimerSoumission(soumission)"
                                                 class="text-red-600 hover:text-red-900"
-                                                title="Supprimer"
                                             >
                                                 Supprimer
                                             </button>
@@ -262,10 +250,10 @@
             <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
                 <div class="px-6 py-4 border-b">
                     <h3 class="text-lg font-medium text-gray-900">
-                        {{ soumissionSelectionnee ? 'Corriger' : 'Noter' }} la soumission
+                        {{ soumissionSelectionnee.statut === 'en_attente' ? 'Corriger' : 'Modifier la note de' }} la soumission
                     </h3>
                     <p class="text-sm text-gray-600 mt-1">
-                        {{ soumissionSelectionnee?.etudiant?.name || '' }}
+                        {{ soumissionSelectionnee.etudiant.name }}
                     </p>
                 </div>
 
@@ -276,9 +264,9 @@
                         </label>
                         <input
                             id="note"
-                            v-model="formNote"
+                            v-model="form.note"
                             type="number"
-                            step="0.5"
+                            step="0.01"
                             min="0"
                             :max="devoir.points"
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -292,7 +280,7 @@
                         </label>
                         <textarea
                             id="commentaire"
-                            v-model="formCommentaire"
+                            v-model="form.commentaire"
                             rows="3"
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         ></textarea>
@@ -328,7 +316,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed } from 'vue'
 import { Link, router } from '@inertiajs/vue3'
 import ProfesseurLayout from '../../../Layouts/NavbarProfesseurs.vue'
 
@@ -338,14 +326,18 @@ const props = defineProps({
     stats: Object
 })
 
-// États
+// États réactifs
 const filtreStatut = ref('')
 const recherche = ref('')
 const modalOuvert = ref(false)
 const enCoursCorrection = ref(false)
 const soumissionSelectionnee = ref(null)
-const formNote = ref('')
-const formCommentaire = ref('')
+
+// Formulaire de correction
+const form = ref({
+    note: '',
+    commentaire: ''
+})
 
 // Formatage des dates
 const formatDate = (dateString) => {
@@ -379,7 +371,7 @@ const getTimeRemaining = (dateLimite) => {
     return `${hours} heures restantes`
 }
 
-// Classes pour les statuts
+// Classes CSS pour les statuts
 const getStatutClasses = (soumission) => {
     const classes = {
         'en_attente': 'bg-yellow-100 text-yellow-800',
@@ -426,21 +418,21 @@ const toggleActif = () => {
 }
 
 const telechargerSoumission = (soumission) => {
-    window.open(`/professeur/devoirs/${props.devoir.id}/soumissions/${soumission.id}/download`, '_blank')
+    window.location.href = `/professeur/devoirs/${props.devoir.id}/soumissions/${soumission.id}/download`
 }
 
 const ouvrirModalCorrection = (soumission) => {
     soumissionSelectionnee.value = soumission
-    formNote.value = soumission.note || ''
-    formCommentaire.value = soumission.commentaire || ''
+    form.value.note = soumission.note || ''
+    form.value.commentaire = soumission.commentaire || ''
     modalOuvert.value = true
 }
 
 const fermerModal = () => {
     modalOuvert.value = false
     soumissionSelectionnee.value = null
-    formNote.value = ''
-    formCommentaire.value = ''
+    form.value.note = ''
+    form.value.commentaire = ''
     enCoursCorrection.value = false
 }
 
@@ -450,8 +442,8 @@ const corrigerSoumission = () => {
     enCoursCorrection.value = true
 
     router.post(`/professeur/devoirs/${props.devoir.id}/soumissions/${soumissionSelectionnee.value.id}/corriger`, {
-        note: parseFloat(formNote.value),
-        commentaire: formCommentaire.value
+        note: form.value.note,
+        commentaire: form.value.commentaire
     }, {
         preserveScroll: true,
         onSuccess: () => {
@@ -459,6 +451,9 @@ const corrigerSoumission = () => {
             router.reload({ only: ['soumissions', 'stats'] })
         },
         onError: () => {
+            alert('Une erreur est survenue. Veuillez réessayer.')
+        },
+        onFinish: () => {
             enCoursCorrection.value = false
         }
     })

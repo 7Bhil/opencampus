@@ -38,9 +38,11 @@ class DevoirController extends Controller
 
     public function show(Devoir $devoir)
     {
-        // Vérifier que le devoir est ACTIF
+        $etudiantId = auth()->id();
+
+        // Vérifier que le devoir est actif
         if (!$devoir->est_actif) {
-            abort(404, 'Ce devoir n\'est pas disponible');
+            abort(404, 'Ce devoir n\'est plus disponible');
         }
 
         // Vérifier si la date limite est dépassée
@@ -48,14 +50,18 @@ class DevoirController extends Controller
 
         // Vérifier si l'étudiant a déjà soumis
         $soumissionExistante = Soumission::where('devoir_id', $devoir->id)
-            ->where('etudiant_id', auth()->id())
+            ->where('etudiant_id', $etudiantId)
             ->first();
 
+        // Charger le professeur
+        $devoir->load('professeur');
+
         return Inertia::render('Etudiants/Devoirs/Show', [
-            'devoir' => $devoir->load(['professeur']),
+            'devoir' => $devoir,
             'soumissionExistante' => $soumissionExistante,
             'estEnRetard' => $estEnRetard,
             'joursRestants' => now()->diffInDays($devoir->date_limite, false),
+            'peutSoumettre' => !$estEnRetard && !$soumissionExistante,
         ]);
     }
 
@@ -63,42 +69,72 @@ class DevoirController extends Controller
     {
         // Validation
         $request->validate([
-            'fichier' => 'required|file|mimes:pdf,doc,docx|max:10240',
-            'commentaire' => 'nullable|string|max:500',
+            'fichier' => 'required|file|mimes:pdf,doc,docx,zip,rar|max:10240', // 10MB max
+            'commentaire' => 'nullable|string|max:1000',
         ]);
 
         // Vérifications
         if (!$devoir->est_actif) {
-            return back()->withErrors(['error' => 'Ce devoir n\'est plus disponible']);
+            return back()->withErrors([
+                'error' => 'Ce devoir n\'est plus disponible pour soumission.'
+            ]);
         }
 
         if (now()->gt($devoir->date_limite)) {
-            return back()->withErrors(['error' => 'La date limite est dépassée']);
+            return back()->withErrors([
+                'error' => 'La date limite de soumission est dépassée.'
+            ]);
         }
+
+        $etudiantId = auth()->id();
 
         // Vérifier si déjà soumis
         $soumissionExistante = Soumission::where('devoir_id', $devoir->id)
-            ->where('etudiant_id', auth()->id())
+            ->where('etudiant_id', $etudiantId)
             ->exists();
 
         if ($soumissionExistante) {
-            return back()->withErrors(['error' => 'Vous avez déjà soumis ce devoir']);
+            return back()->withErrors([
+                'error' => 'Vous avez déjà soumis ce devoir.'
+            ]);
         }
 
-        // Enregistrer le fichier
-        $fichierPath = $request->file('fichier')->store('soumissions', 'public');
+        try {
+            // Enregistrer le fichier
+            $fichierPath = $request->file('fichier')->store('soumissions/devoirs', 'public');
 
-        // Créer la soumission
-        Soumission::create([
-            'devoir_id' => $devoir->id,
-            'etudiant_id' => auth()->id(),
-            'fichier_path' => $fichierPath,
-            'commentaire' => $request->commentaire,
-            'statut' => 'en_attente',
-            'date_soumission' => now(),
-        ]);
+            // Créer la soumission
+            Soumission::create([
+                'devoir_id' => $devoir->id,
+                'etudiant_id' => $etudiantId,
+                'fichier_path' => $fichierPath,
+                'commentaire' => $request->commentaire,
+                'statut' => 'en_attente',
+                'date_soumission' => now(),
+            ]);
 
-        return redirect()->route('etudiant.devoirs.show', $devoir)
-            ->with('success', 'Devoir soumis avec succès !');
+            return redirect()->route('etudiant.devoirs.show', $devoir)
+                ->with('success', 'Devoir soumis avec succès !');
+
+        } catch (\Exception $e) {
+            return back()->withErrors([
+                'error' => 'Une erreur est survenue lors de l\'envoi du fichier.'
+            ]);
+        }
+    }
+public function download(Devoir $devoir)
+    {
+        if (!$devoir->est_actif) {
+            abort(404);
+        }
+
+        $path = storage_path('app/public/' . $devoir->fichier_path);
+
+        if (!file_exists($path)) {
+            abort(404, 'Fichier non trouvé');
+        }
+
+        return response()->download($path, 'enonce-' . $devoir->titre . '.' . pathinfo($path, PATHINFO_EXTENSION));
     }
 }
+

@@ -328,13 +328,11 @@ const filteredDevoirs = computed(() => {
 })
 
 const toggleActif = (devoir) => {
-    router.put(route('professeur.devoirs.update', devoir.id), {
-        est_actif: !devoir.est_actif
-    }, {
+    router.post(route('professeur.devoirs.toggle-actif', devoir.id), {}, {
         preserveScroll: true,
-        onSuccess: () => {
-            // Recharger la page pour voir les changements
-            router.reload({ only: ['devoirs'] })
+        onSuccess: (response) => {
+            // Mettre à jour localement le statut sans recharger toute la page
+            devoir.est_actif = !devoir.est_actif
         }
     })
 }

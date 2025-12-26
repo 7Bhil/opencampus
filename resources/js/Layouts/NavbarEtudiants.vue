@@ -21,14 +21,14 @@
                             Accueil
                         </Link>
                         <Link
-                            :href="route('etudiant.courses')"
+                            :href="route('etudiant.cours.index')"
                             class="text-white font-medium hover:opacity-85 transition-opacity text-sm lg:text-base"
-                            :class="{ 'border-b-2 border-white': $page.url.startsWith('/etudiant/courses') }"
+                            :class="{ 'border-b-2 border-white': $page.url.startsWith('/etudiant/cours') }"
                         >
                             Mes cours
                         </Link>
                         <Link
-                            :href="route('etudiant.assignments')"
+                            :href="route('etudiant.devoirs.index')"
                             class="text-white font-medium hover:opacity-85 transition-opacity text-sm lg:text-base"
                             :class="{ 'border-b-2 border-white': $page.url.startsWith('/etudiant/assignments') }"
                         >
@@ -65,7 +65,7 @@
                                     <span>Mon profil</span>
                                 </Link>
                                 <Link
-                                    :href="route('settings')"
+                                    :href="route('etudiant.settings')"
                                     class="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors"
                                     @click="closeAllMenus"
                                 >
@@ -137,14 +137,14 @@
                             📊 Tableau de bord
                         </Link>
                         <Link
-                            :href="route('etudiant.courses')"
+                            :href="route('etudiant.cours.index')"
                             class="block px-3 py-2 rounded-md text-white font-medium hover:bg-white/20 transition-colors"
                             @click="closeMobileMenu"
                         >
                             📚 Cours
                         </Link>
                         <Link
-                            :href="route('etudiant.assignments')"
+                            :href="route('etudiant.cours.index')"
                             class="block px-3 py-2 rounded-md text-white font-medium hover:bg-white/20 transition-colors"
                             @click="closeMobileMenu"
                         >
@@ -172,7 +172,7 @@
                             👤 Mon profil
                         </Link>
                         <Link
-                            :href="route('settings')"
+                            :href="route('etudiant.settings')"
                             class="block px-3 py-2 rounded-md text-white font-medium hover:bg-white/20 transition-colors"
                             @click="closeMobileMenu"
                         >
@@ -208,16 +208,16 @@
                     </Link>
 
                     <Link
-                        :href="route('etudiant.courses')"
+                        :href="route('etudiant.cours.index')"
                         class="flex items-center gap-3 p-3 rounded-xl transition-all font-medium"
-                        :class="isActive('/etudiant/courses') ? 'bg-[#5b7ce6] text-white' : 'text-gray-600 hover:bg-gray-100'"
+                        :class="isActive('/etudiant/cours') ? 'bg-[#5b7ce6] text-white' : 'text-gray-600 hover:bg-gray-100'"
                     >
                         <span class="text-xl">📚</span>
                         <span class="text-sm lg:text-base">Mes cours</span>
                     </Link>
 
                     <Link
-                        :href="route('etudiant.assignments')"
+                        :href="route('etudiant.devoirs.index')"
                         class="flex items-center gap-3 p-3 rounded-xl transition-all font-medium"
                         :class="isActive('/etudiant/assignments') ? 'bg-[#5b7ce6] text-white' : 'text-gray-600 hover:bg-gray-100'"
                     >
@@ -253,9 +253,9 @@
                     </Link>
 
                     <Link
-                        :href="route('settings')"
+                        :href="route('etudiant.settings')"
                         class="flex items-center gap-3 p-3 rounded-xl transition-all font-medium"
-                        :class="isActive('/settings') ? 'bg-[#5b7ce6] text-white' : 'text-gray-600 hover:bg-gray-100'"
+                        :class="isActive('/etudiant/settings') ? 'bg-[#5b7ce6] text-white' : 'text-gray-600 hover:bg-gray-100'"
                     >
                         <span class="text-xl">⚙️</span>
                         <span class="text-sm lg:text-base">Paramètres</span>

@@ -1,219 +1,388 @@
 <template>
-    <NavbarUser>
-        <Head title="Tableau de bord" />
-
-        <div class="max-w-7xl mx-auto">
-            <!-- En-tête -->
-            <div class="mb-8">
-                <h1 class="text-4xl font-bold text-gray-900 mb-2">
-                    Bienvenue, {{ $page.props.auth.user?.name || 'Étudiant' }} 👋
-                </h1>
-                <p class="text-gray-600 text-lg">
-                    Voici un aperçu de votre activité
-                </p>
+  <NavbarUser>
+    <div class="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
+      <!-- Header -->
+      <div class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-8 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <h1 class="text-3xl md:text-4xl font-bold mb-2">
+                👋 Bienvenue, {{ $page.props.auth.user.name }}
+              </h1>
+              <p class="text-blue-100 opacity-90">
+                Votre tableau de bord étudiant - Suivez vos cours et devoirs
+              </p>
             </div>
-
-            <!-- Statistiques principales -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div class="bg-white p-8 rounded-2xl shadow-lg border-l-4 border-[#5b7ce6]">
-                    <div class="text-5xl font-bold text-[#5b7ce6] mb-2">24</div>
-                    <div class="text-gray-500 text-sm">Cours téléchargés</div>
-                </div>
-                <div class="bg-white p-8 rounded-2xl shadow-lg border-l-4 border-[#9b6ec9]">
-                    <div class="text-5xl font-bold text-[#9b6ec9] mb-2">8</div>
-                    <div class="text-gray-500 text-sm">Devoirs soumis</div>
-                </div>
-                <div class="bg-white p-8 rounded-2xl shadow-lg border-l-4 border-[#b567b8]">
-                    <div class="text-5xl font-bold text-[#b567b8] mb-2">156</div>
-                    <div class="text-gray-500 text-sm">Points gagnés</div>
-                </div>
+            <div class="hidden md:block">
+              <div class="text-4xl">🎓</div>
             </div>
-
-            <!-- Section devoirs urgents -->
-            <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
-                <h2 class="flex items-center gap-3 text-2xl font-bold text-gray-900 mb-6">
-                    <span class="text-2xl">📝</span>
-                    Devoirs à rendre prochainement
-                </h2>
-
-                <div class="overflow-x-auto">
-                    <table class="w-full">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-900">Matière</th>
-                                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-900">Titre</th>
-                                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-900">Date limite</th>
-                                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-900">Statut</th>
-                                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-900">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-200">
-                            <tr class="hover:bg-gray-50 transition-colors" v-for="assignment in assignments" :key="assignment.id">
-                                <td class="px-6 py-4 text-sm text-gray-900">{{ assignment.subject }}</td>
-                                <td class="px-6 py-4 text-sm text-gray-900">{{ assignment.title }}</td>
-                                <td class="px-6 py-4 text-sm text-gray-900">{{ assignment.due_date }}</td>
-                                <td class="px-6 py-4">
-                                    <span :class="assignment.statusClass">
-                                        {{ assignment.status }}
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <button :class="assignment.buttonClass">
-                                        {{ assignment.buttonText }}
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Section cours récents -->
-            <div class="bg-white rounded-2xl shadow-lg p-8">
-                <h2 class="flex items-center gap-3 text-2xl font-bold text-gray-900 mb-6">
-                    <span class="text-2xl">📚</span>
-                    Cours récemment consultés
-                </h2>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div v-for="course in recentCourses" :key="course.id"
-                         class="border-2 border-gray-100 rounded-xl p-6 hover:border-[#5b7ce6] hover:shadow-lg transition-all duration-300 cursor-pointer">
-                        <div class="flex justify-between items-start mb-4">
-                            <div>
-                                <h3 class="text-lg font-bold text-gray-900 mb-2">{{ course.title }}</h3>
-                                <div class="flex items-center gap-4 text-sm text-gray-500">
-                                    <span class="flex items-center gap-1">
-                                        <span class="text-sm">🎓</span>
-                                        {{ course.professor }}
-                                    </span>
-                                    <span class="flex items-center gap-1">
-                                        <span class="text-sm">📅</span>
-                                        {{ course.date }}
-                                    </span>
-                                </div>
-                            </div>
-                            <span :class="course.badgeClass">
-                                {{ course.type }}
-                            </span>
-                        </div>
-
-                        <p class="text-gray-600 text-sm mb-4 leading-relaxed">
-                            {{ course.description }}
-                        </p>
-
-                        <div class="flex justify-between items-center pt-4 border-t border-gray-100">
-                            <div class="flex gap-4 text-sm">
-                                <span class="flex items-center gap-1 text-red-500">
-                                    <span>❤️</span>
-                                    {{ course.likes }}
-                                </span>
-                                <span class="flex items-center gap-1 text-gray-500">
-                                    <span>💬</span>
-                                    {{ course.comments }}
-                                </span>
-                            </div>
-                            <button class="text-[#5b7ce6] font-semibold text-sm hover:text-[#4a6bcf] transition-colors">
-                                Ouvrir →
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Section progression -->
-            <div class="bg-white rounded-2xl shadow-lg p-8 mt-8">
-                <h2 class="flex items-center gap-3 text-2xl font-bold text-gray-900 mb-6">
-                    <span class="text-2xl">📈</span>
-                    Votre progression
-                </h2>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div v-for="progress in progressData" :key="progress.subject" class="space-y-3">
-                        <div class="flex justify-between items-center">
-                            <span class="font-semibold text-gray-700">{{ progress.subject }}</span>
-                            <span class="text-sm text-gray-500">{{ progress.percentage }}%</span>
-                        </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2">
-                            <div class="bg-[#5b7ce6] h-2 rounded-full transition-all duration-500"
-                                 :style="{ width: progress.percentage + '%' }"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+          </div>
         </div>
-    </NavbarUser>
+      </div>
+
+      <!-- Main Content -->
+      <main class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Statistiques en temps réel -->
+        <section class="mb-8">
+          <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+            <span class="text-blue-500">📊</span> Statistiques
+          </h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Cours disponibles -->
+            <div class="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-blue-500 hover:shadow-xl transition-shadow">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-gray-500 text-sm font-medium">Cours disponibles</p>
+                  <p class="text-3xl font-bold mt-2 text-gray-800">{{ stats.cours_disponibles || 0 }}</p>
+                </div>
+                <div class="text-3xl text-blue-500">📚</div>
+              </div>
+              <div class="mt-4">
+                <Link :href="route('etudiant.cours.index')"
+                      class="text-blue-600 hover:text-blue-800 text-sm font-medium inline-flex items-center">
+                  Voir tous les cours
+                  <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                  </svg>
+                </Link>
+              </div>
+            </div>
+
+            <!-- Devoirs soumis -->
+            <div class="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-green-500 hover:shadow-xl transition-shadow">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-gray-500 text-sm font-medium">Devoirs soumis</p>
+                  <p class="text-3xl font-bold mt-2 text-gray-800">{{ stats.devoirs_soumis || 0 }}</p>
+                </div>
+                <div class="text-3xl text-green-500">📝</div>
+              </div>
+              <div class="mt-4">
+                <Link :href="route('etudiant.devoirs.index')"
+                      class="text-green-600 hover:text-green-800 text-sm font-medium inline-flex items-center">
+                  Voir mes soumissions
+                  <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                  </svg>
+                </Link>
+              </div>
+            </div>
+
+            <!-- Points gagnés -->
+            <div class="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-purple-500 hover:shadow-xl transition-shadow">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-gray-500 text-sm font-medium">Points gagnés</p>
+                  <p class="text-3xl font-bold mt-2 text-gray-800">{{ stats.points_gagnes || 0 }}</p>
+                </div>
+                <div class="text-3xl text-purple-500">⭐</div>
+              </div>
+              <div class="mt-4">
+                <span class="text-purple-600 text-sm font-medium">Votre score total</span>
+              </div>
+            </div>
+
+            <!-- Devoirs en retard -->
+            <div class="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-red-500 hover:shadow-xl transition-shadow">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-gray-500 text-sm font-medium">Devoirs en retard</p>
+                  <p class="text-3xl font-bold mt-2 text-gray-800">{{ stats.devoirs_en_retard || 0 }}</p>
+                </div>
+                <div class="text-3xl text-red-500">⏰</div>
+              </div>
+              <div class="mt-4">
+                <span v-if="stats.devoirs_en_retard > 0" class="text-red-600 text-sm font-medium">
+                  {{ stats.devoirs_en_retard }} devoir(s) non rendu(s)
+                </span>
+                <span v-else class="text-green-600 text-sm font-medium">
+                  Aucun retard 🎉
+                </span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Deux colonnes principales -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <!-- Colonne gauche : Devoirs -->
+          <div class="lg:col-span-2 space-y-8">
+            <!-- Devoirs à rendre -->
+            <section class="bg-white rounded-2xl shadow-lg p-6">
+              <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+                  <span class="text-blue-500">📋</span> Devoirs à rendre
+                </h3>
+                <Link :href="route('etudiant.devoirs.index')"
+                      class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                  Voir tous →
+                </Link>
+              </div>
+
+              <div v-if="devoirs_a_rendre && devoirs_a_rendre.length > 0" class="space-y-4">
+                <div v-for="devoir in devoirs_a_rendre" :key="devoir.id"
+                     class="border border-gray-200 rounded-xl p-4 hover:border-blue-300 hover:shadow-md transition-all">
+                  <div class="flex justify-between items-start">
+                    <div class="flex-1">
+                      <div class="flex items-center gap-3 mb-2">
+                        <h4 class="font-bold text-gray-800">{{ devoir.titre }}</h4>
+                        <span :class="getUrgenceBadgeClass(devoir.statut_urgence)"
+                              class="px-2 py-1 rounded-full text-xs font-medium">
+                          {{ getUrgenceText(devoir.statut_urgence) }}
+                        </span>
+                      </div>
+                      <p class="text-sm text-gray-600 mb-2">{{ devoir.matiere }}</p>
+                      <div class="flex items-center gap-4 text-sm text-gray-500">
+                        <span class="flex items-center gap-1">
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                          </svg>
+                          {{ devoir.professeur }}
+                        </span>
+                        <span class="flex items-center gap-1">
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                          </svg>
+                          {{ devoir.date_limite }}
+                        </span>
+                        <span class="flex items-center gap-1">
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
+                          </svg>
+                          {{ devoir.points }} points
+                        </span>
+                      </div>
+                    </div>
+                    <Link :href="devoir.lien_devoir"
+                          class="ml-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition">
+                      Rendre
+                    </Link>
+                  </div>
+                </div>
+              </div>
+
+              <div v-else class="text-center py-8">
+                <div class="text-6xl mb-4">🎉</div>
+                <h4 class="text-lg font-semibold text-gray-700 mb-2">Aucun devoir à rendre</h4>
+                <p class="text-gray-500">Tous vos devoirs sont à jour !</p>
+              </div>
+            </section>
+
+            <!-- Devoirs en retard -->
+            <section v-if="devoirs_en_retard && devoirs_en_retard.length > 0" class="bg-white rounded-2xl shadow-lg p-6 border border-red-200">
+              <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+                  <span class="text-red-500">⏰</span> Devoirs en retard
+                </h3>
+                <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-medium">
+                  {{ devoirs_en_retard.length }} retard(s)
+                </span>
+              </div>
+
+              <div class="space-y-4">
+                <div v-for="devoir in devoirs_en_retard" :key="devoir.id"
+                     class="border border-red-200 bg-red-50 rounded-xl p-4">
+                  <div class="flex justify-between items-start">
+                    <div>
+                      <h4 class="font-bold text-gray-800">{{ devoir.titre }}</h4>
+                      <p class="text-sm text-gray-600 mb-2">{{ devoir.matiere }}</p>
+                      <div class="flex items-center gap-4 text-sm text-gray-500">
+                        <span>{{ devoir.professeur }}</span>
+                        <span class="text-red-600 font-medium">
+                          Retard: {{ devoir.jours_retard }} jour(s)
+                        </span>
+                        <span>Échéance: {{ devoir.date_limite }}</span>
+                      </div>
+                    </div>
+                    <Link :href="route('etudiant.devoirs.show', devoir.id)"
+                          class="ml-4 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition">
+                      Rendre maintenant
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <!-- Colonne droite : Cours et Soumissions -->
+          <div class="space-y-8">
+            <!-- Cours récents -->
+            <section class="bg-white rounded-2xl shadow-lg p-6">
+              <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+                  <span class="text-green-500">📚</span> Cours récents
+                </h3>
+                <Link :href="route('etudiant.cours.index')"
+                      class="text-green-600 hover:text-green-800 text-sm font-medium">
+                  Tous les cours →
+                </Link>
+              </div>
+
+              <div v-if="cours_recents && cours_recents.length > 0" class="space-y-4">
+                <div v-for="cours in cours_recents" :key="cours.id"
+                     class="border border-gray-200 rounded-xl p-4 hover:border-green-300 hover:shadow-md transition-all">
+                  <div class="flex justify-between items-start mb-3">
+                    <h4 class="font-bold text-gray-800">{{ cours.titre }}</h4>
+                    <span v-if="cours.est_payant"
+                          class="bg-red-100 text-red-800 px-2 py-1 rounded text-xs font-medium">
+                      {{ cours.prix }}€
+                    </span>
+                    <span v-else
+                          class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-medium">
+                      Gratuit
+                    </span>
+                  </div>
+                  <p class="text-sm text-gray-600 mb-3">{{ cours.description_courte }}</p>
+                  <div class="flex justify-between items-center text-sm text-gray-500">
+                    <span>{{ cours.professeur }}</span>
+                    <span>{{ cours.date_publication }}</span>
+                  </div>
+                  <div class="mt-4">
+                    <Link :href="cours.lien_cours"
+                          class="text-green-600 hover:text-green-800 text-sm font-medium inline-flex items-center">
+                      Consulter le cours
+                      <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                      </svg>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+
+              <div v-else class="text-center py-4">
+                <p class="text-gray-500">Aucun cours disponible pour le moment</p>
+              </div>
+            </section>
+
+            <!-- Dernières soumissions -->
+            <section class="bg-white rounded-2xl shadow-lg p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                <span class="text-purple-500">📨</span> Dernières soumissions
+              </h3>
+
+              <div v-if="dernieres_soumissions && dernieres_soumissions.length > 0" class="space-y-4">
+                <div v-for="soumission in dernieres_soumissions" :key="soumission.id"
+                     class="border border-gray-200 rounded-xl p-4">
+                  <h4 class="font-bold text-gray-800 mb-2">{{ soumission.devoir_titre }}</h4>
+                  <div class="flex justify-between items-center mb-3">
+                    <span class="text-sm text-gray-600">{{ soumission.matiere }}</span>
+                    <span :class="soumission.statut_couleur"
+                          class="px-2 py-1 rounded text-xs font-medium">
+                      {{ soumission.statut }}
+                    </span>
+                  </div>
+                  <div class="flex justify-between items-center text-sm text-gray-500">
+                    <span>{{ soumission.professeur }}</span>
+                    <span>{{ soumission.date_soumission }}</span>
+                  </div>
+                  <div v-if="soumission.note !== null" class="mt-3 pt-3 border-t">
+                    <div class="flex items-center justify-between">
+                      <span class="text-sm text-gray-600">Note obtenue:</span>
+                      <span class="text-lg font-bold text-green-600">{{ soumission.note }}/20</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div v-else class="text-center py-4">
+                <p class="text-gray-500">Aucune soumission pour le moment</p>
+                <Link :href="route('etudiant.devoirs.index')"
+                      class="mt-2 text-purple-600 hover:text-purple-800 text-sm font-medium inline-block">
+                  Voir les devoirs disponibles
+                </Link>
+              </div>
+            </section>
+
+            <!-- Actions rapides -->
+            <section class="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl shadow-lg p-6 text-white">
+              <h3 class="text-xl font-bold mb-4">⚡ Actions rapides</h3>
+              <div class="space-y-3">
+                <Link :href="route('etudiant.devoirs.index')"
+                      class="flex items-center justify-between bg-white/20 hover:bg-white/30 p-3 rounded-lg transition">
+                  <span>📝 Voir tous les devoirs</span>
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                  </svg>
+                </Link>
+                <Link :href="route('etudiant.cours.index')"
+                      class="flex items-center justify-between bg-white/20 hover:bg-white/30 p-3 rounded-lg transition">
+                  <span>📚 Explorer les cours</span>
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                  </svg>
+                </Link>
+                <Link :href="route('etudiant.upload')"
+                      class="flex items-center justify-between bg-white/20 hover:bg-white/30 p-3 rounded-lg transition">
+                  <span>📤 Soumettre un devoir</span>
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                  </svg>
+                </Link>
+              </div>
+            </section>
+          </div>
+        </div>
+      </main>
+    </div>
+  </NavbarUser>
 </template>
 
 <script setup>
-import { ref } from 'vue'; // Ajoutez cet import
-import { Head } from '@inertiajs/vue3';
-import NavbarUser from '../../Layouts/NavbarEtudiants.vue';
+import { Link } from '@inertiajs/vue3'
+import NavbarUser from '@/Layouts/NavbarEtudiants.vue'
 
-// Données des devoirs
-const assignments = ref([
-    {
-        id: 1,
-        subject: 'Algorithmique',
-        title: 'TP3 - Arbres binaires',
-        due_date: '02 Nov 2025',
-        status: 'À rendre',
-        statusClass: 'inline-flex px-3 py-1 text-xs font-semibold bg-red-100 text-red-800 rounded-full',
-        buttonText: 'Soumettre',
-        buttonClass: 'bg-[#5b7ce6] text-white px-4 py-2 rounded-lg font-semibold hover:bg-[#4a6bcf] transition-colors'
-    },
-    {
-        id: 2,
-        subject: 'Base de données',
-        title: 'Projet SQL',
-        due_date: '05 Nov 2025',
-        status: 'En cours',
-        statusClass: 'inline-flex px-3 py-1 text-xs font-semibold bg-yellow-100 text-yellow-800 rounded-full',
-        buttonText: 'Continuer',
-        buttonClass: 'bg-[#9b6ec9] text-white px-4 py-2 rounded-lg font-semibold hover:bg-[#8a5db8] transition-colors'
-    },
-    {
-        id: 3,
-        subject: 'Réseaux',
-        title: 'Analyse protocoles TCP/IP',
-        due_date: '28 Oct 2025',
-        status: 'Rendu',
-        statusClass: 'inline-flex px-3 py-1 text-xs font-semibold bg-green-100 text-green-800 rounded-full',
-        buttonText: 'Voir',
-        buttonClass: 'bg-[#b567b8] text-white px-4 py-2 rounded-lg font-semibold hover:bg-[#a456a7] transition-colors'
-    }
-]);
+defineProps({
+  stats: Object,
+  devoirs_a_rendre: Array,
+  devoirs_en_retard: Array,
+  cours_recents: Array,
+  dernieres_soumissions: Array
+})
 
-// Données des cours récents
-const recentCourses = ref([
-    {
-        id: 1,
-        title: 'Machine Learning Avancé',
-        professor: 'Prof. Martin',
-        date: '25 Oct 2025',
-        type: 'Cours',
-        badgeClass: 'px-3 py-1 text-xs font-semibold bg-blue-100 text-blue-800 rounded-full',
-        description: 'Introduction aux réseaux de neurones convolutionnels et apprentissage par renforcement.',
-        likes: 67,
-        comments: 18
-    },
-    {
-        id: 2,
-        title: 'Développement Web Fullstack',
-        professor: 'Prof. Dubois',
-        date: '24 Oct 2025',
-        type: 'TD',
-        badgeClass: 'px-3 py-1 text-xs font-semibold bg-indigo-100 text-indigo-800 rounded-full',
-        description: 'Création d\'une application complète avec Laravel, Vue.js et base de données relationnelle.',
-        likes: 52,
-        comments: 9
-    }
-]);
+// Fonctions utilitaires
+const getUrgenceBadgeClass = (statut) => {
+  const classes = {
+    expire: 'bg-red-100 text-red-800',
+    tres_urgent: 'bg-red-100 text-red-800',
+    urgent: 'bg-orange-100 text-orange-800',
+    normal: 'bg-green-100 text-green-800'
+  }
+  return classes[statut] || 'bg-gray-100 text-gray-800'
+}
 
-// Données de progression
-const progressData = ref([
-    { subject: 'Algorithmique', percentage: 75 },
-    { subject: 'Base de données', percentage: 60 },
-    { subject: 'Réseaux', percentage: 45 },
-    { subject: 'Mathématiques', percentage: 85 }
-]);
+const getUrgenceText = (statut) => {
+  const textes = {
+    expire: 'Expiré',
+    tres_urgent: 'Très urgent',
+    urgent: 'Urgent',
+    normal: 'Normal'
+  }
+  return textes[statut] || 'À faire'
+}
 </script>
+
+<style scoped>
+/* Animations subtiles */
+.hover\:shadow-md {
+  transition: all 0.3s ease;
+}
+
+.hover\:shadow-xl {
+  transition: all 0.3s ease;
+}
+
+.border-l-4 {
+  transition: border-color 0.3s ease;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .text-3xl {
+    font-size: 1.5rem;
+  }
+
+  .text-4xl {
+    font-size: 2rem;
+  }
+}
+</style>

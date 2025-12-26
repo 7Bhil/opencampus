@@ -23,6 +23,7 @@ class Devoir extends Model
     protected $casts = [
         'date_limite' => 'datetime',
         'est_actif' => 'boolean',
+        'est_public' => 'boolean',
         'points' => 'integer',
     ];
 
@@ -34,5 +35,17 @@ class Devoir extends Model
     public function soumissions(): HasMany
     {
         return $this->hasMany(Soumission::class);
+    }
+public function scopeActif($query)
+    {
+        return $query->where('est_actif', true)
+                     ->where('date_limite', '>', now());
+    }
+
+    // Scope pour les devoirs publics (si vous ajoutez est_public)
+    public function scopePublic($query)
+    {
+        return $query->where('est_public', true)
+                     ->where('date_limite', '>', now());
     }
 }

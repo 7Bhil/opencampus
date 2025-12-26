@@ -77,30 +77,35 @@ class DevoirController extends Controller
      * Enregistre un nouveau devoir
      */
     public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'titre' => 'required|string|max:255',
-            'matiere' => 'required|string|max:100',
-            'description' => 'nullable|string',
-            'fichier' => 'required|file|mimes:pdf,doc,docx,txt|max:5120',
-            'date_limite' => 'required|date|after:now',
-            'points' => 'required|integer|min:1|max:20',
-            'est_actif' => 'boolean',
-        ]);
+{
+    $validated = $request->validate([
+        'titre' => 'required|string|max:255',
+        'matiere' => 'required|string|max:100',
+        'description' => 'nullable|string',
+        'fichier' => 'required|file|mimes:pdf,doc,docx,txt|max:5120',
+        'date_limite' => 'required|date|after:now',
+        'points' => 'required|integer|min:1|max:20',
+        'est_actif' => 'boolean', // Ajoutez cette ligne
+    ]);
 
-        $validated['professeur_id'] = auth()->id();
+    $validated['professeur_id'] = auth()->id();
 
-        // Gestion du fichier joint
-        if ($request->hasFile('fichier')) {
-            $validated['fichier_path'] = $request->file('fichier')->store('devoirs', 'public');
-        }
-
-        $devoir = Devoir::create($validated);
-
-        return redirect()
-            ->route('professeur.devoirs.index')
-            ->with('success', 'Devoir créé avec succès.');
+    // Assurez-vous que est_actif a une valeur par défaut
+    if (!isset($validated['est_actif'])) {
+        $validated['est_actif'] = true; // Par défaut actif
     }
+
+    // Gestion du fichier joint
+    if ($request->hasFile('fichier')) {
+        $validated['fichier_path'] = $request->file('fichier')->store('devoirs', 'public');
+    }
+
+    $devoir = Devoir::create($validated);
+
+    return redirect()
+        ->route('professeur.devoirs.index')
+        ->with('success', 'Devoir créé avec succès.');
+}
 
     /**
      * Affiche les détails d'un devoir

@@ -114,7 +114,7 @@
 
 <script setup>
 import { Link } from '@inertiajs/vue3'
-import ProfesseurLayout from '../../Layouts/ProfesseurLayout.vue'
+import ProfesseurLayout from '../../Layouts/NavbarProfesseurs.vue'
 
 const props = defineProps({
     cours: Object,

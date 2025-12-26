@@ -1,60 +1,289 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 📚 OpenCampus - Plateforme Éducative
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+![OpenCampus](https://img.shields.io/badge/OpenCampus-Laravel%2012-blueviolet)
+![Version](https://img.shields.io/badge/version-1.0.0-green)
+![License](https://img.shields.io/badge/license-MIT-blue)
 
-## About Laravel
+**OpenCampus** est une plateforme web innovante qui permet aux étudiants de publier et vendre leurs livres, et aux professeurs de gérer des devoirs avec un système de correction collaboratif.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## ✨ Fonctionnalités Principales
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### 👨‍🎓 Pour les Étudiants
+- 📖 Publication et vente de livres/ebooks
+- 📝 Rendu de devoirs en ligne
+- 👀 Consultation des cours
+- ❤️ Système de "likes" pour les cours
+- 📱 Interface responsive
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 👨‍🏫 Pour les Professeurs
+- 📚 Création et gestion de cours
+- 📋 Publication de devoirs avec échéances
+- 📄 Correction des travaux étudiants
+- ⭐ Attribution de notes et commentaires
+- 📊 Statistiques de performance
 
-## Learning Laravel
+### 👨‍💼 Pour les Admins
+- 👥 Gestion des utilisateurs
+- 📈 Tableaux de bord analytiques
+- ⚙️ Configuration de la plateforme
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## 🛠️ Technologies Utilisées
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- **Backend**: Laravel 12, PHP 8.3
+- **Frontend**: Vue.js 3, Inertia.js, Tailwind CSS
+- **Base de données**: SQLite / MySQL
+- **Authentification**: Laravel Breeze
+- **Gestion de fichiers**: Laravel Storage
+- **Interface**: Design responsive avec Tailwind CSS
 
-## Laravel Sponsors
+## 📁 Structure du Projet
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```
+opencampus/
+├── app/
+│   ├── Http/Controllers/
+│   │   ├── Admin/           # Contrôleurs administration
+│   │   ├── Etudiant/        # Contrôleurs étudiants
+│   │   ├── Professeur/      # Contrôleurs professeurs
+│   │   └── Auth/           # Authentification
+│   ├── Models/             # Modèles Eloquent
+│   │   ├── User.php
+│   │   ├── Cours.php
+│   │   ├── Devoir.php
+│   │   └── Soumission.php
+│   └── View/Components/    # Composants Blade
+├── database/
+│   ├── migrations/         # Migrations
+│   └── seeders/           # Seeders de données
+├── public/                # Assets publics
+├── resources/
+│   ├── js/
+│   │   ├── Pages/         # Pages Inertia/Vue
+│   │   │   ├── Admin/
+│   │   │   ├── Etudiants/
+│   │   │   ├── Professeurs/
+│   │   │   └── Auth/
+│   │   └── Layouts/       # Layouts partagés
+│   └── views/             # Vues Blade
+└── storage/               # Fichiers uploadés
+    ├── app/public/
+    │   ├── cours/         # Fichiers de cours
+    │   ├── devoirs/       # Énoncés de devoirs
+    │   └── soumissions/   # Soumissions étudiants
+    └── framework/
+```
 
-### Premium Partners
+## 🚀 Installation
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### Prérequis
+- PHP 8.2+
+- Composer
+- Node.js 18+
+- npm ou yarn
+- SQLite ou MySQL
 
-## Contributing
+### Étapes d'installation
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+1. **Cloner le projet**
+```bash
+git clone https://github.com/votre-username/opencampus.git
+cd opencampus
+```
 
-## Code of Conduct
+2. **Installer les dépendances PHP**
+```bash
+composer install
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+3. **Installer les dépendances JavaScript**
+```bash
+npm install
+```
 
-## Security Vulnerabilities
+4. **Copier le fichier d'environnement**
+```bash
+cp .env.example .env
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+5. **Générer la clé d'application**
+```bash
+php artisan key:generate
+```
 
-## License
+6. **Configurer la base de données**
+```bash
+# Pour SQLite (recommandé pour le développement)
+touch database/database.sqlite
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-# opencampus
+# Pour MySQL, configurer les variables DB_* dans .env
+```
+
+7. **Exécuter les migrations et seeders**
+```bash
+php artisan migrate --seed
+```
+
+8. **Compiler les assets**
+```bash
+npm run build
+# ou pour le développement
+npm run dev
+```
+
+9. **Démarrer le serveur**
+```bash
+php artisan serve
+```
+
+## 👥 Utilisateurs par Défaut
+
+Après le seeding, ces utilisateurs sont créés :
+
+### Admin
+- **Email**: Admin@gmail.com
+- **Mot de passe**: password
+- **Type de compte**: Admin
+
+### Professeur
+- **Email**: professeur@gmail.com
+- **Mot de passe**: password
+- **Type de compte**: Professeur
+
+### Étudiant
+- **Email**: etudiant@gmail.com
+- **Mot de passe**: password
+- **Type de compte**: Étudiant
+
+## 📚 Fonctionnalités Détaillées
+
+### 📖 Publication de Livres (Étudiants)
+- Interface drag & drop pour upload
+- Options de prix et de visibilité
+- Prévisualisation avant publication
+- Gestion des droits d'auteur
+
+### 📝 Système de Devoirs
+- **Création de devoirs** par les professeurs
+- **Upload de fichiers** (PDF, DOC, TXT)
+- **Dates limites** avec notifications
+- **Correction en ligne** avec annotations
+- **Feedback détaillé** avec notes
+
+### 🎓 Cours en Ligne
+- Organisation par matières
+- Support multi-format (PDF, vidéos, liens)
+- Système de notation par les étudiants
+- Statistiques d'engagement
+
+## 🔒 Sécurité
+
+- **Authentification** multi-role (Admin, Professeur, Étudiant)
+- **Middleware** de vérification d'email
+- **Protection CSRF**
+- **Validation des fichiers uploadés**
+- **Permissions basées sur les rôles**
+
+## 🧪 Tests
+
+```bash
+# Exécuter les tests PHPUnit
+php artisan test
+
+# Exécuter les tests avec coverage
+php artisan test --coverage
+```
+
+## 📈 Déploiement
+
+### Pour la production
+
+1. **Configurer .env**
+```env
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://votre-domaine.com
+
+# Configurer la base de données
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=opencampus
+DB_USERNAME=username
+DB_PASSWORD=password
+
+# Configuration storage
+FILESYSTEM_DISK=public
+```
+
+2. **Optimiser l'application**
+```bash
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+php artisan optimize
+```
+
+3. **Configurer le serveur web**
+- Nginx/Apache avec PHP-FPM
+- SSL/TLS recommandé
+- Configuration des permissions storage
+
+## 🐛 Dépannage
+
+### Problèmes courants
+
+1. **Permissions storage**
+```bash
+chmod -R 755 storage
+chmod -R 755 bootstrap/cache
+```
+
+2. **Erreur SQLite**
+```bash
+# Vérifier que SQLite est installé
+php -m | grep sqlite3
+
+# Créer le fichier de base de données
+touch database/database.sqlite
+```
+
+3. **Erreurs Inertia.js**
+```bash
+npm run build
+# ou
+php artisan inertia:start-ssr
+```
+
+## 🤝 Contribution
+
+1. Fork le projet
+2. Créer une branche (`git checkout -b feature/AmazingFeature`)
+3. Commiter les changements (`git commit -m 'Add AmazingFeature'`)
+4. Push vers la branche (`git push origin feature/AmazingFeature`)
+5. Ouvrir une Pull Request
+
+## 📄 Licence
+
+Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
+
+## 👏 Remerciements
+
+- [BIAOU Hésed](https://github.com/AnisOp4z5Y5z)
+- [MINAWADE Aubierge](https://github.com/Aubie-46)
+- [VIDAGBANDJI Clarisse](https://github.com/cl-2-mich)
+- [GNIKPO Jean-Paul](https://github.com/JeanPaulGnikpo)
+- [YEKEDO Marielle](https://github.com/)
+- [Bhil .CHITOU](https://github.com/7Bhil)
+- Tous les contributeurs et testeurs
+
+## 📞 Support
+
+Pour le support, veuillez :
+1. Vérifier la [documentation](#)
+2. Ouvrir un [issue](https://github.com/votre-username/opencampus/issues)
+3. Contacter l'équipe à support@opencampus.com
+
+---
+
+**Développé avec ❤️ par l'équipe OpenCampus**  
+*Révolutionnant l'éducation, un étudiant à la fois*

@@ -56,6 +56,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::prefix('cours')->name('cours.')->group(function () {
             Route::get('/', [EtudiantCoursController::class, 'index'])->name('index');
             Route::get('/{cours}', [EtudiantCoursController::class, 'show'])->name('show');
+            Route::get('/{cours}/download', [EtudiantCoursController::class, 'download'])->name('download');
+            Route::post('/{cours}/toggle-like', [EtudiantCoursController::class, 'toggleLike'])->name('toggle-like');
         });
 
         // Routes pour les devoirs des étudiants

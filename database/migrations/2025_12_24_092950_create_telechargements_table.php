@@ -7,15 +7,18 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up(): void
-    {
-        Schema::create('telechargements', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('cours_id')->constrained()->onDelete('cascade');
-            $table->timestamps();
-        });
-    }
+// database/migrations/xxxx_create_telechargements_table.php
+public function up()
+{
+    Schema::create('telechargements', function (Blueprint $table) {
+        $table->id();
+        $table->foreignId('user_id')->constrained()->onDelete('cascade');
+        $table->foreignId('cours_id')->constrained()->onDelete('cascade');
+        $table->timestamps();
+
+        $table->index(['user_id', 'cours_id']);
+    });
+}
 
     public function down(): void
     {

@@ -7,17 +7,18 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up(): void
-    {
-        Schema::create('likes', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('cours_id')->constrained()->onDelete('cascade');
-            $table->timestamps();
+// database/migrations/xxxx_create_likes_table.php
+public function up()
+{
+    Schema::create('likes', function (Blueprint $table) {
+        $table->id();
+        $table->foreignId('user_id')->constrained()->onDelete('cascade');
+        $table->foreignId('cours_id')->constrained()->onDelete('cascade');
+        $table->timestamps();
 
-            $table->unique(['user_id', 'cours_id']); // Un like par user par cours
-        });
-    }
+        $table->unique(['user_id', 'cours_id']); // Un utilisateur ne peut liker qu'une fois par cours
+    });
+}
 
     public function down(): void
     {

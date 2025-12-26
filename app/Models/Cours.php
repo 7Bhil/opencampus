@@ -35,12 +35,12 @@ class Cours extends Model
 
     public function likes(): HasMany
     {
-        return $this->hasMany(Like::class);
+        return $this->hasMany(Like::class, 'cours_id');
     }
 
     public function telechargements(): HasMany
     {
-        return $this->hasMany(Telechargement::class);
+        return $this->hasMany(Telechargement::class, 'cours_id');
     }
 
     // Ajoutez cette méthode pour filtrer les cours publics

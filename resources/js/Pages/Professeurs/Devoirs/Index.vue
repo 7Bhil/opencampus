@@ -220,7 +220,7 @@
                             <Component
                                 :is="link.url ? 'Link' : 'span'"
                                 v-for="link in devoirs.links"
-                                :href="link.url"
+                                :href="link.url || ''"
                                 v-html="link.label"
                                 class="px-4 py-2 mx-1 rounded-lg"
                                 :class="{

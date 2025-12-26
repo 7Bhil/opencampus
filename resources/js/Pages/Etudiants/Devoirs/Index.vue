@@ -74,8 +74,7 @@
 
 <script setup>
 import { Link } from '@inertiajs/vue3'
-import NavbarUser from '@/Layouts/NavbarEtudiants.vue'
-import Pagination from '@/Components/Pagination.vue'
+import NavbarUser from '../../../Layouts/NavbarEtudiants.vue'
 
 defineProps({
   devoirs: Object

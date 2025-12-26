@@ -79,7 +79,7 @@
             :is="link.url ? 'Link' : 'span'"
             v-for="link in cours.links"
             :key="link.label"
-            :href="link.url"
+            :href="link.url || ''"
             :class="[
               'px-4 py-2 mx-1 rounded-lg',
               link.active ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-100',

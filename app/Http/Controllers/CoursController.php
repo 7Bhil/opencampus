@@ -66,15 +66,13 @@ public function create()
     // Enregistrer un nouveau cours
     public function store(Request $request)
 {
-    \Log::info('=== STORE COURS CALLED ===');
-    \Log::info('Request data:', $request->all());
-    \Log::info('Files:', $request->hasFile('fichier') ? ['has_file' => true] : ['has_file' => false]);
+    \Log::info('=== STORE COURS ===');
+    \Log::info('User type:', [auth()->user()->account_type]);
 
     if (!auth()->user()->canPublishCours()) {
         abort(403);
     }
 
-    // Validation STRICTE avec messages d'erreur
     $validated = $request->validate([
         'titre' => 'required|string|max:255',
         'matiere' => 'required|string|max:100',
@@ -84,51 +82,47 @@ public function create()
         'prix' => 'required_if:est_payant,true|nullable|numeric|min:0',
         'fichier' => 'required|file|mimes:pdf,doc,docx,ppt,pptx,txt|max:10240',
         'est_public' => 'boolean',
-    ], [
-        'titre.required' => 'Le titre est obligatoire',
-        'matiere.required' => 'La matière est obligatoire',
-        'categorie.required' => 'La catégorie est obligatoire',
-        'fichier.required' => 'Le fichier est obligatoire',
-        'fichier.file' => 'Le fichier est invalide',
-        'fichier.max' => 'Le fichier ne doit pas dépasser 10MB',
     ]);
 
-    \Log::info('Validation passed:', $validated);
+    \Log::info('Validation passed');
 
     // Gestion du fichier
     if ($request->hasFile('fichier')) {
         $path = $request->file('fichier')->store('cours', 'public');
         $validated['fichier_path'] = $path;
-        \Log::info('File stored at:', ['path' => $path]);
+        \Log::info('File stored:', ['path' => $path]);
     }
 
-    // Ajouter l'ID de l'utilisateur
     $validated['user_id'] = auth()->id();
 
-    // Si non payant, prix = null
     if (!$validated['est_payant']) {
         $validated['prix'] = null;
     }
 
-    // Pour les étudiants : le cours n'est pas public immédiatement
+    // Logique de modération selon le type d'utilisateur
     if (auth()->user()->account_type === 'Etudiant') {
+        // Étudiant premium : cours soumis pour modération
         $validated['est_public'] = false;
         $validated['est_modere'] = false;
+        $validated['est_approuve'] = false;
+
+        $message = 'Cours soumis pour modération ! Il sera publié après vérification par l\'administrateur.';
+        \Log::info('Cours étudiant - en attente de modération');
+    } else {
+        // Professeur : publié directement
+        $validated['est_public'] = $validated['est_public'] ?? true;
+        $validated['est_modere'] = true;
+        $validated['est_approuve'] = true;
+
+        $message = 'Cours publié avec succès !';
+        \Log::info('Cours professeur - publié directement');
     }
 
-    \Log::info('Final data to create:', $validated);
-
-    // Créer le cours
+    \Log::info('Creating cours with data:', $validated);
     $cours = Cours::create($validated);
-
     \Log::info('Cours created:', ['id' => $cours->id]);
 
-    $message = auth()->user()->account_type === 'Professeur'
-        ? 'Cours publié avec succès !'
-        : 'Cours soumis pour modération ! Il sera publié après vérification.';
-
-    return redirect()->route('cours.index')
-        ->with('success', $message);
+    return redirect()->route('cours.index')->with('success', $message);
 }
 
     // Télécharger le fichier du cours

@@ -10,6 +10,7 @@ use App\Http\Controllers\Professeur\DashboardController as ProfesseurDashboardCo
 use App\Http\Controllers\CoursController;
 use App\Http\Controllers\PremiumController;
 use App\Http\Controllers\MarketplaceCoursController;
+use App\Http\Controllers\Admin\AdminController; // IMPORT AJOUTÉ
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -40,7 +41,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', function () {
         $user = Auth::user();
 
-        if ($user->email === 'Admin@gmail.com') {
+        // Vérifiez d'abord si c'est un admin
+        if ($user->account_type === 'Admin') {
             return redirect()->route('admin.dashboard');
         }
 
@@ -48,6 +50,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             return redirect()->route('professeur.dashboard');
         }
 
+        // Par défaut : étudiant
         return redirect()->route('etudiant.dashboard');
     })->name('dashboard.redirect');
 
@@ -160,15 +163,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     |--------------------------------------------------------------------------
     */
     Route::prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', function () {
-        return Inertia::render('Admin/Dashboard');
-    })->name('dashboard');
-
-    // Modération des cours
-    Route::get('/cours-a-moderer', [CoursController::class, 'coursAModerer'])->name('cours-a-moderer');
-    Route::post('/cours/{cours}/approuver', [CoursController::class, 'approuver'])->name('cours.approuver');
-    Route::post('/cours/{cours}/rejeter', [CoursController::class, 'rejeter'])->name('cours.rejeter');
-});
+        Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+        Route::get('/users', [AdminController::class, 'users'])->name('users');
+        Route::post('/users/{user}/update-status', [AdminController::class, 'updateUserStatus'])->name('users.update-status');
+        Route::get('/cours', [AdminController::class, 'cours'])->name('cours');
+        Route::delete('/cours/{cours}', [AdminController::class, 'deleteCours'])->name('cours.delete');
+        Route::get('/cours-a-moderer', [AdminController::class, 'coursAModerer'])->name('cours-a-moderer');
+        Route::post('/cours/{cours}/approuver', [AdminController::class, 'approuver'])->name('cours.approuver');
+        Route::post('/cours/{cours}/rejeter', [AdminController::class, 'rejeter'])->name('cours.rejeter');
+    });
 
     /*
     |--------------------------------------------------------------------------

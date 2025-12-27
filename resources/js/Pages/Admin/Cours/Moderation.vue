@@ -1,4 +1,4 @@
-<!-- resources/js/Pages/Admin/CoursAModerer.vue -->
+<!-- resources/js/Pages/Admin/Cours/Moderation.vue -->
 <template>
     <AdminLayout :cours-a-moderer-count="cours.length">
         <template #header>
@@ -19,7 +19,7 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <h3 class="text-lg font-medium text-gray-900">{{ c.titre }}</h3>
-                            <p class="text-sm text-gray-600">Soumis par : {{ c.auteur.name }} ({{ c.auteur.email }})</p>
+                            <p class="text-sm text-gray-600">Soumis par : {{ c.auteur?.name || 'Utilisateur inconnu' }} ({{ c.auteur?.email || 'Email non disponible' }})</p>
                         </div>
                         <div class="flex items-center space-x-2">
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
@@ -103,8 +103,10 @@
                                 Annuler
                             </button>
                             <button @click="rejeterCours(c.id)"
-                                    class="px-3 py-1 text-sm border border-transparent rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700">
-                                Confirmer le rejet
+                                    :disabled="rejeterForm.processing"
+                                    class="px-3 py-1 text-sm border border-transparent rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                                <span v-if="rejeterForm.processing">Traitement...</span>
+                                <span v-else>Confirmer le rejet</span>
                             </button>
                         </div>
                     </div>
@@ -129,7 +131,12 @@ const props = defineProps({
 
 const showRejectForm = reactive({})
 const rejectReasons = reactive({})
-const form = useForm({})
+
+// Forms séparés pour éviter les conflits
+const approbationForm = useForm({})
+const rejeterForm = useForm({
+    raison_rejet: ''
+})
 
 const showRejectReason = (coursId) => {
     showRejectForm[coursId] = true
@@ -143,20 +150,37 @@ const cancelReject = (coursId) => {
 
 const approuverCours = (coursId) => {
     if (confirm('Approuver ce cours ? Il sera publié sur la marketplace.')) {
-        form.post(route('admin.cours.approuver', coursId))
+        approbationForm.post(route('admin.cours.approuver', coursId))
     }
 }
 
 const rejeterCours = (coursId) => {
-    if (!rejectReasons[coursId]?.trim()) {
-        alert('Veuillez indiquer une raison pour le rejet.')
+    const raison = rejectReasons[coursId]?.trim()
+
+    if (!raison || raison.length < 10) {
+        alert('Veuillez indiquer une raison valide (minimum 10 caractères).')
         return
     }
 
-    if (confirm(`Rejeter ce cours avec la raison : "${rejectReasons[coursId]}" ?`)) {
-        form.post(route('admin.cours.rejeter', coursId), {
-            data: {
-                raison_rejet: rejectReasons[coursId]
+    if (confirm(`Rejeter ce cours avec la raison : "${raison}" ?`)) {
+        // Réinitialise et configure le form
+        rejeterForm.raison_rejet = raison
+        rejeterForm.transform((data) => ({
+            raison_rejet: data.raison_rejet
+        })).post(route('admin.cours.rejeter', coursId), {
+            onSuccess: () => {
+                // Supprime le cours de la liste
+                const index = props.cours.findIndex(c => c.id === coursId)
+                if (index !== -1) {
+                    props.cours.splice(index, 1)
+                }
+                // Reset
+                rejectReasons[coursId] = ''
+                showRejectForm[coursId] = false
+                rejeterForm.reset()
+            },
+            onError: (errors) => {
+                alert('Erreur: ' + (errors.raison_rejet || errors.message || 'Erreur lors du rejet'))
             }
         })
     }

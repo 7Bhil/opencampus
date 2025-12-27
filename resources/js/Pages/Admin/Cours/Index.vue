@@ -158,8 +158,9 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { Link, useForm } from '@inertiajs/vue3'
-import AdminLayout from '../../Layouts/AdminLayout.vue'
+import { Link, router, useForm } from '@inertiajs/vue3'
+import AdminLayout from '../../../Layouts/AdminLayout.vue'
+import axios from 'axios'
 
 const props = defineProps({
     cours: {
@@ -212,8 +213,15 @@ const getStatusBadgeClass = (cours) => {
 }
 
 const confirmDelete = (coursId) => {
-    if (confirm('Êtes-vous sûr de vouloir supprimer ce cours ? Cette action est irréversible.')) {
-        form.delete(route('admin.cours.delete', coursId))
+    if (confirm('Êtes-vous sûr de vouloir supprimer ce cours ?')) {
+        // CORRECTION : Utilise axios au lieu de form/delete
+        axios.delete(route('admin.cours.delete', coursId))
+            .then(() => {
+                location.reload() // Recharge la page
+            })
+            .catch(error => {
+                alert('Erreur: ' + error.message)
+            })
     }
 }
 

@@ -22,14 +22,17 @@
                             Marketplace
                         </Link>
 
-                        <!-- Publier un cours (si autorisé) -->
-                        <Link
-                            v-if="$page.props.auth.user && $page.props.auth.user.canPublishCours"
-                            :href="route('cours.create')"
-                            class="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-medium px-4 py-2 rounded-lg text-sm lg:text-base transition-all duration-300 hover:shadow-lg"
-                        >
-                            📚 Publier un cours
-                        </Link>
+                        <!-- Publier un cours (pour profs et admins) -->
+                        <!-- Remplacer toute la section "Publier un cours" par : -->
+<Link
+    v-if="$page.props.auth.user"
+    :href="route('cours.create')"
+    class="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-medium px-4 py-2 rounded-lg text-sm lg:text-base transition-all duration-300 hover:shadow-lg"
+>
+    📚 Publier un cours
+</Link>
+
+                        <!-- Devenir Premium (étudiants) -->
                         <Link
                             v-else-if="$page.props.auth.user && $page.props.auth.user.account_type === 'Etudiant'"
                             :href="route('etudiant.premium.index')"
@@ -38,7 +41,7 @@
                             💎 Devenir Premium
                         </Link>
 
-                        <!-- Liens étudiants -->
+                        <!-- Liens principaux -->
                         <Link
                             :href="route('dashboard.redirect')"
                             class="text-white font-medium hover:opacity-85 transition-opacity text-sm lg:text-base"
@@ -82,9 +85,9 @@
                                 v-show="showUserMenu"
                                 class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 border border-gray-100 z-50"
                             >
-                                <!-- Mes cours publiés -->
+                                <!-- Mes cours publiés (pour profs et admins) -->
                                 <Link
-                                    v-if="$page.props.auth.user && $page.props.auth.user.canPublishCours"
+                                    v-if="$page.props.auth.user && ['Professeur', 'Admin'].includes($page.props.auth.user.account_type)"
                                     :href="route('professeur.mes-cours')"
                                     class="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors"
                                     @click="closeAllMenus"
@@ -172,18 +175,19 @@
                             class="block px-3 py-2 rounded-md text-white font-medium hover:bg-white/20 transition-colors"
                             @click="closeMobileMenu"
                         >
-                            🛒 Marketplace Cours
+                            🛒 Marketplace
                         </Link>
 
-                        <!-- Publier un cours (si autorisé) -->
-                        <Link
-                            v-if="$page.props.auth.user && $page.props.auth.user.canPublishCours"
-                            :href="route('cours.create')"
-                            class="block px-3 py-2 rounded-md text-white font-medium hover:bg-white/20 transition-colors bg-green-500/30"
-                            @click="closeMobileMenu"
-                        >
-                            📚 Publier un cours
-                        </Link>
+                        <!-- Remplacer toute la section "Publier un cours" par : -->
+<Link
+    v-if="$page.props.auth.user"
+    :href="route('cours.create')"
+    class="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-medium px-4 py-2 rounded-lg text-sm lg:text-base transition-all duration-300 hover:shadow-lg"
+>
+    📚 Publier un cours
+</Link>
+
+                        <!-- Devenir Premium (étudiants) -->
                         <Link
                             v-else-if="$page.props.auth.user && $page.props.auth.user.account_type === 'Etudiant'"
                             :href="route('etudiant.premium.index')"
@@ -193,9 +197,9 @@
                             💎 Devenir Premium
                         </Link>
 
-                        <!-- Mes cours publiés (si autorisé) -->
+                        <!-- Mes cours publiés (pour profs et admins) -->
                         <Link
-                            v-if="$page.props.auth.user && $page.props.auth.user.canPublishCours"
+                            v-if="$page.props.auth.user && ['Professeur', 'Admin'].includes($page.props.auth.user.account_type)"
                             :href="route('professeur.mes-cours')"
                             class="block px-3 py-2 rounded-md text-white font-medium hover:bg-white/20 transition-colors"
                             @click="closeMobileMenu"
@@ -203,13 +207,13 @@
                             📖 Mes cours publiés
                         </Link>
 
-                        <!-- Liens étudiants -->
+                        <!-- Liens principaux -->
                         <Link
                             :href="route('dashboard.redirect')"
                             class="block px-3 py-2 rounded-md text-white font-medium hover:bg-white/20 transition-colors"
                             @click="closeMobileMenu"
                         >
-                            📊 Tableau de bord
+                            🏠 Accueil
                         </Link>
                         <Link
                             :href="route('etudiant.cours.index')"
@@ -233,7 +237,7 @@
                             💎 Premium
                         </Link>
                         <Link
-                            href="/notifications"
+                            :href="route('etudiant.notifications')"
                             class="block px-3 py-2 rounded-md text-white font-medium hover:bg-white/20 transition-colors"
                             @click="closeMobileMenu"
                         >
@@ -280,14 +284,13 @@
                         :class="isActive('/cours') && !isActive('/cours/create') ? 'bg-blue-500 text-white' : 'text-gray-600 hover:bg-gray-100'"
                     >
                         <span class="text-xl">🛒</span>
-                        <span class="text-sm lg:text-base">Marketplace Cours</span>
+                        <span class="text-sm lg:text-base">Marketplace</span>
                     </Link>
 
-                    <!-- Publier un cours -->
+                    <!-- Publier un cours (pour profs et admins) -->
                     <Link
-                        v-if="$page.props.auth.user && $page.props.auth.user.canPublishCours"
+                        v-if="$page.props.auth.user && ['Professeur', 'Admin'].includes($page.props.auth.user.account_type)"
                         :href="route('cours.create')"
-
                         class="flex items-center gap-3 p-3 rounded-xl transition-all font-medium"
                         :class="isActive('/cours/create') ? 'bg-green-500 text-white' : 'text-gray-600 hover:bg-gray-100'"
                     >
@@ -295,7 +298,7 @@
                         <span class="text-sm lg:text-base">Publier un cours</span>
                     </Link>
 
-                    <!-- Devenir Premium (étudiant non premium) -->
+                    <!-- Devenir Premium (étudiants) -->
                     <Link
                         v-else-if="$page.props.auth.user && $page.props.auth.user.account_type === 'Etudiant'"
                         :href="route('etudiant.premium.index')"
@@ -305,25 +308,25 @@
                         <span class="text-sm lg:text-base">Devenir Premium</span>
                     </Link>
 
-                    <!-- Mes cours publiés (si auteur) -->
+                    <!-- Mes cours publiés (pour profs et admins) -->
                     <Link
-                        v-if="$page.props.auth.user && $page.props.auth.user.canPublishCours"
+                        v-if="$page.props.auth.user && ['Professeur', 'Admin'].includes($page.props.auth.user.account_type)"
                         :href="route('professeur.mes-cours')"
                         class="flex items-center gap-3 p-3 rounded-xl transition-all font-medium"
-                        :class="isActive('/professeur/cours') ? 'bg-green-500 text-white' : 'text-gray-600 hover:bg-gray-100'"
+                        :class="isActive('/professeur/mes-cours') ? 'bg-green-500 text-white' : 'text-gray-600 hover:bg-gray-100'"
                     >
                         <span class="text-xl">📖</span>
                         <span class="text-sm lg:text-base">Mes cours publiés</span>
                     </Link>
 
-                    <!-- Liens étudiants -->
+                    <!-- Liens principaux -->
                     <Link
                         :href="route('dashboard.redirect')"
                         class="flex items-center gap-3 p-3 rounded-xl transition-all font-medium"
                         :class="isActive('/dashboard') ? 'bg-[#5b7ce6] text-white' : 'text-gray-600 hover:bg-gray-100'"
                     >
-                        <span class="text-xl">📊</span>
-                        <span class="text-sm lg:text-base">Tableau de bord</span>
+                        <span class="text-xl">🏠</span>
+                        <span class="text-sm lg:text-base">Accueil</span>
                     </Link>
 
                     <Link

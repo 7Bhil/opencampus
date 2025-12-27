@@ -65,7 +65,7 @@ class Cours extends Model
 
     public function achats()
     {
-        return $this->hasMany(Achat::class);
+        return $this->hasMany(AchatCours::class);
     }
 
     public function likes()

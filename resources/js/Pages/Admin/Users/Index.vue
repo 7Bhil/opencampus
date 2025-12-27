@@ -175,8 +175,8 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { useForm } from '@inertiajs/vue3'
-import AdminLayout from '../../Layouts/AdminLayout.vue'
+import { router, useForm } from '@inertiajs/vue3'
+import AdminLayout from '../../../Layouts/AdminLayout.vue'
 
 const props = defineProps({
     users: {
@@ -248,7 +248,7 @@ const resetPassword = (userId) => {
 
 const confirmDelete = (userId) => {
     if (confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ? Tous ses cours seront aussi supprimés.')) {
-        form.delete(route('admin.users.delete', userId))
+        router.delete(route('admin.users.delete', userId))
     }
 }
 

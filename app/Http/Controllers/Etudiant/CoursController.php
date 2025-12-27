@@ -7,6 +7,7 @@ use App\Models\Cours;
 use App\Models\Like;
 use App\Models\Telechargement;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class CoursController extends Controller
@@ -19,10 +20,10 @@ class CoursController extends Controller
         // Récupérer les filtres
         $filtres = $request->only(['categorie', 'matiere', 'type', 'search']);
 
-        // Construire la requête
+        // Construire la requête - CORRIGÉ : avec auteur au lieu de professeur
         $query = Cours::where('est_public', true)
-            ->with(['professeur'])
-            ->withCount(['likes', 'telechargements'])
+            ->where('est_approuve', true) // Ajouté : seulement les cours approuvés
+            ->with(['auteur']) // CORRIGÉ : 'auteur' pas 'professeur'
             ->latest();
 
         // Appliquer les filtres
@@ -55,11 +56,11 @@ class CoursController extends Controller
 
         // Statistiques pour les filtres
         $statistiques = [
-            'total_cours' => Cours::where('est_public', true)->count(),
-            'cours_gratuits' => Cours::where('est_public', true)->where('est_payant', false)->count(),
-            'cours_payants' => Cours::where('est_public', true)->where('est_payant', true)->count(),
-            'categories' => Cours::where('est_public', true)->whereNotNull('categorie')->distinct()->pluck('categorie'),
-            'matieres' => Cours::where('est_public', true)->whereNotNull('matiere')->distinct()->pluck('matiere'),
+            'total_cours' => Cours::where('est_public', true)->where('est_approuve', true)->count(),
+            'cours_gratuits' => Cours::where('est_public', true)->where('est_approuve', true)->where('est_payant', false)->count(),
+            'cours_payants' => Cours::where('est_public', true)->where('est_approuve', true)->where('est_payant', true)->count(),
+            'categories' => Cours::where('est_public', true)->where('est_approuve', true)->whereNotNull('categorie')->distinct()->pluck('categorie'),
+            'matieres' => Cours::where('est_public', true)->where('est_approuve', true)->whereNotNull('matiere')->distinct()->pluck('matiere'),
         ];
 
         return Inertia::render('Etudiants/Cours/Index', [
@@ -74,17 +75,20 @@ class CoursController extends Controller
      */
     public function show(Cours $cours)
     {
-        // Vérifier que le cours est public
-        if (!$cours->est_public) {
-            abort(404, 'Ce cours n\'est pas disponible');
+        // Vérifier que le cours est public ET approuvé
+        if (!$cours->est_public || !$cours->est_approuve) {
+            // L'auteur et l'admin peuvent toujours voir
+            if (!auth()->check() ||
+                (auth()->id() !== $cours->user_id && auth()->user()->account_type !== 'Admin')) {
+                abort(404, 'Ce cours n\'est pas disponible');
+            }
         }
 
         // Incrémenter le compteur de vues
         $cours->increment('nombre_vues');
 
-        // Charger les relations
-        $cours->load(['professeur']);
-        $cours->loadCount(['likes', 'telechargements']);
+        // Charger les relations - CORRIGÉ : 'auteur' pas 'professeur'
+        $cours->load('auteur');
 
         // Vérifier si l'étudiant a déjà liké ce cours
         $userLiked = false;
@@ -102,15 +106,15 @@ class CoursController extends Controller
                 ->exists();
         }
 
-        // Cours similaires (même catégorie ou matière)
+        // Cours similaires (même catégorie ou matière) - CORRIGÉ : 'auteur' pas 'professeur'
         $coursSimilaires = Cours::where('est_public', true)
+            ->where('est_approuve', true)
             ->where('id', '!=', $cours->id)
             ->where(function($query) use ($cours) {
                 $query->where('categorie', $cours->categorie)
                       ->orWhere('matiere', $cours->matiere);
             })
-            ->with(['professeur'])
-            ->withCount(['likes', 'telechargements'])
+            ->with(['auteur'])
             ->take(4)
             ->get();
 
@@ -119,6 +123,7 @@ class CoursController extends Controller
             'userLiked' => $userLiked,
             'userDownloaded' => $userDownloaded,
             'coursSimilaires' => $coursSimilaires,
+            'isOwner' => auth()->check() && $cours->user_id === auth()->id(),
         ]);
     }
 
@@ -127,15 +132,13 @@ class CoursController extends Controller
      */
     public function download(Cours $cours)
     {
-        // Vérifier que le cours est public
-        if (!$cours->est_public) {
-            abort(404);
-        }
-
-        // Vérifier les droits d'accès pour les cours payants
-        if ($cours->est_payant) {
-            // TODO: Vérifier si l'étudiant a acheté ce cours
-            // Pour l'instant, on autorise tout le monde
+        // Vérifier que le cours est public ET approuvé
+        if (!$cours->est_public || !$cours->est_approuve) {
+            // Seul l'auteur ou l'admin peut télécharger un cours non public
+            if (!auth()->check() ||
+                (auth()->id() !== $cours->user_id && auth()->user()->account_type !== 'Admin')) {
+                abort(404);
+            }
         }
 
         // Enregistrer le téléchargement
@@ -144,10 +147,10 @@ class CoursController extends Controller
                 'cours_id' => $cours->id,
                 'user_id' => auth()->id(),
             ]);
-        }
 
-        // Incrémenter le compteur de téléchargements
-        $cours->increment('telechargements_count');
+            // Incrémenter le compteur d'achats (même si gratuit)
+            $cours->increment('nombre_achats');
+        }
 
         // Retourner le fichier
         $path = storage_path('app/public/' . $cours->fichier_path);
@@ -156,7 +159,7 @@ class CoursController extends Controller
             abort(404, 'Fichier non trouvé');
         }
 
-        return response()->download($path, $cours->titre . '.' . pathinfo($path, PATHINFO_EXTENSION));
+        return Storage::disk('public')->download($cours->fichier_path);
     }
 
     /**
@@ -166,6 +169,13 @@ class CoursController extends Controller
     {
         if (!auth()->check()) {
             return response()->json(['error' => 'Connectez-vous pour liker'], 401);
+        }
+
+        // Vérifier l'accès au cours
+        if (!$cours->est_public || !$cours->est_approuve) {
+            if (auth()->id() !== $cours->user_id && auth()->user()->account_type !== 'Admin') {
+                return response()->json(['error' => 'Accès non autorisé'], 403);
+            }
         }
 
         $like = Like::where('cours_id', $cours->id)
@@ -183,13 +193,10 @@ class CoursController extends Controller
             $liked = true;
         }
 
-        // Recharger le compteur
-        $cours->loadCount('likes');
-
         return response()->json([
             'success' => true,
             'liked' => $liked,
-            'likes_count' => $cours->likes_count,
+            'likes_count' => $cours->likes()->count(),
         ]);
     }
 }

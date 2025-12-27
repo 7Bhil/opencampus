@@ -40,36 +40,38 @@ class User extends Authenticatable
         return $this->hasMany(Cours::class, 'user_id');
     }
 
+// app/Models/User.php
+// app/Models/User.php
 public function canPublishCours()
 {
-    \Log::info('=== canPublishCours CHECK ===');
-    \Log::info('User ID: ' . $this->id);
-    \Log::info('Account type: ' . $this->account_type);
-    \Log::info('Is premium: ' . ($this->is_premium ? 'yes' : 'no'));
+    $accountType = strtolower($this->account_type);
 
-    if ($this->account_type === 'Professeur') {
-        \Log::info('→ Professeur → AUTORISÉ');
+    // Debug
+    \Log::info('canPublishCours check:', [
+        'user_id' => $this->id,
+        'account_type' => $this->account_type,
+        'est_premium' => $this->est_premium,
+        'is_premium_boolean' => $this->est_premium === true || $this->est_premium === 1
+    ]);
+
+    // Les professeurs et admins peuvent toujours publier
+    if (in_array($accountType, ['professeur', 'admin'])) {
+        \Log::info('Can publish: Professeur/Admin');
         return true;
     }
 
-    if ($this->account_type === 'Etudiant' && $this->is_premium) {
-        \Log::info('→ Étudiant premium → AUTORISÉ');
-        return true;
+    // Les étudiants doivent être premium
+    if ($accountType === 'etudiant') {
+        // Vérifie si est_premium est vrai (booléen) ou 1 (entier)
+        $canPublish = $this->est_premium === true || $this->est_premium === 1;
+        \Log::info('Étudiant premium check:', [
+            'est_premium' => $this->est_premium,
+            'canPublish' => $canPublish
+        ]);
+        return $canPublish;
     }
 
-    \Log::info('→ NON AUTORISÉ');
+    \Log::info('Can publish: false (default)');
     return false;
 }
-
-    public function hasPremiumAccess()
-    {
-        return $this->is_premium === true;
-    }
-
-    // Pour la compatibilité avec l'ancien code
-    public function coursEnseignes()
-    {
-        return $this->hasMany(Cours::class, 'user_id')
-                    ->where('account_type', 'Professeur');
-    }
 }

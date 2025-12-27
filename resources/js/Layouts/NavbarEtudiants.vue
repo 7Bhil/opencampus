@@ -13,6 +13,32 @@
 
                     <!-- Navigation Desktop -->
                     <nav class="hidden md:flex gap-4 lg:gap-8 items-center">
+                        <!-- Marketplace Cours (pour tous) -->
+                        <Link
+                            :href="route('cours.index')"
+                            class="text-white font-medium hover:opacity-85 transition-opacity text-sm lg:text-base"
+                            :class="{ 'border-b-2 border-white': $page.url.startsWith('/cours') && !$page.url.startsWith('/cours/create') }"
+                        >
+                            Marketplace
+                        </Link>
+
+                        <!-- Publier un cours (si autorisé) -->
+                        <Link
+                            v-if="$page.props.auth.user && $page.props.auth.user.canPublishCours"
+                            :href="route('cours.create')"
+                            class="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-medium px-4 py-2 rounded-lg text-sm lg:text-base transition-all duration-300 hover:shadow-lg"
+                        >
+                            📚 Publier un cours
+                        </Link>
+                        <Link
+                            v-else-if="$page.props.auth.user && $page.props.auth.user.account_type === 'Etudiant'"
+                            :href="route('etudiant.premium.index')"
+                            class="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white font-medium px-4 py-2 rounded-lg text-sm lg:text-base transition-all duration-300 hover:shadow-lg"
+                        >
+                            💎 Devenir Premium
+                        </Link>
+
+                        <!-- Liens étudiants -->
                         <Link
                             :href="route('dashboard.redirect')"
                             class="text-white font-medium hover:opacity-85 transition-opacity text-sm lg:text-base"
@@ -23,19 +49,19 @@
                         <Link
                             :href="route('etudiant.cours.index')"
                             class="text-white font-medium hover:opacity-85 transition-opacity text-sm lg:text-base"
-                            :class="{ 'border-b-2 border-white': $page.url.startsWith('/etudiant/cours') }"
+                            :class="{ 'border-b-2 border-white': $page.url.startsWith('/etudiant/cours') && !$page.url.includes('create') }"
                         >
-                            Mes cours
+                            Mes cours suivis
                         </Link>
                         <Link
                             :href="route('etudiant.devoirs.index')"
                             class="text-white font-medium hover:opacity-85 transition-opacity text-sm lg:text-base"
-                            :class="{ 'border-b-2 border-white': $page.url.startsWith('/etudiant/assignments') }"
+                            :class="{ 'border-b-2 border-white': $page.url.startsWith('/etudiant/devoirs') }"
                         >
                             Devoirs
                         </Link>
                         <Link
-                            :href="route('etudiant.premium')"
+                            :href="route('etudiant.premium.index')"
                             class="text-white font-medium hover:opacity-85 transition-opacity text-sm lg:text-base"
                             :class="{ 'border-b-2 border-white': $page.url.startsWith('/etudiant/premium') }"
                         >
@@ -56,6 +82,17 @@
                                 v-show="showUserMenu"
                                 class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 border border-gray-100 z-50"
                             >
+                                <!-- Mes cours publiés -->
+                                <Link
+                                    v-if="$page.props.auth.user && $page.props.auth.user.canPublishCours"
+                                    :href="route('professeur.mes-cours')"
+                                    class="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors"
+                                    @click="closeAllMenus"
+                                >
+                                    <span>📚</span>
+                                    <span>Mes cours publiés</span>
+                                </Link>
+
                                 <Link
                                     :href="route('profile.edit')"
                                     class="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors"
@@ -129,6 +166,44 @@
                     class="md:hidden bg-white/10 backdrop-blur-sm border-t border-white/20"
                 >
                     <div class="space-y-1 px-4 pb-3 pt-2">
+                        <!-- Marketplace Cours -->
+                        <Link
+                            :href="route('cours.index')"
+                            class="block px-3 py-2 rounded-md text-white font-medium hover:bg-white/20 transition-colors"
+                            @click="closeMobileMenu"
+                        >
+                            🛒 Marketplace Cours
+                        </Link>
+
+                        <!-- Publier un cours (si autorisé) -->
+                        <Link
+                            v-if="$page.props.auth.user && $page.props.auth.user.canPublishCours"
+                            :href="route('cours.create')"
+                            class="block px-3 py-2 rounded-md text-white font-medium hover:bg-white/20 transition-colors bg-green-500/30"
+                            @click="closeMobileMenu"
+                        >
+                            📚 Publier un cours
+                        </Link>
+                        <Link
+                            v-else-if="$page.props.auth.user && $page.props.auth.user.account_type === 'Etudiant'"
+                            :href="route('etudiant.premium.index')"
+                            class="block px-3 py-2 rounded-md text-white font-medium hover:bg-white/20 transition-colors bg-purple-500/30"
+                            @click="closeMobileMenu"
+                        >
+                            💎 Devenir Premium
+                        </Link>
+
+                        <!-- Mes cours publiés (si autorisé) -->
+                        <Link
+                            v-if="$page.props.auth.user && $page.props.auth.user.canPublishCours"
+                            :href="route('professeur.mes-cours')"
+                            class="block px-3 py-2 rounded-md text-white font-medium hover:bg-white/20 transition-colors"
+                            @click="closeMobileMenu"
+                        >
+                            📖 Mes cours publiés
+                        </Link>
+
+                        <!-- Liens étudiants -->
                         <Link
                             :href="route('dashboard.redirect')"
                             class="block px-3 py-2 rounded-md text-white font-medium hover:bg-white/20 transition-colors"
@@ -141,17 +216,17 @@
                             class="block px-3 py-2 rounded-md text-white font-medium hover:bg-white/20 transition-colors"
                             @click="closeMobileMenu"
                         >
-                            📚 Cours
+                            📚 Mes cours suivis
                         </Link>
                         <Link
-                            :href="route('etudiant.cours.index')"
+                            :href="route('etudiant.devoirs.index')"
                             class="block px-3 py-2 rounded-md text-white font-medium hover:bg-white/20 transition-colors"
                             @click="closeMobileMenu"
                         >
                             📝 Mes devoirs
                         </Link>
                         <Link
-                            href="/premium"
+                            :href="route('etudiant.premium.index')"
                             class="block px-3 py-2 rounded-md text-white font-medium hover:bg-white/20 transition-colors"
                             @click="closeMobileMenu"
                         >
@@ -198,6 +273,50 @@
             <!-- Sidebar Verticale (Desktop uniquement) -->
             <aside class="hidden lg:block fixed left-0 top-16 bottom-0 w-64 bg-white shadow-lg overflow-y-auto z-40">
                 <div class="p-4 lg:p-6 space-y-2">
+                    <!-- Marketplace Cours -->
+                    <Link
+                        :href="route('cours.index')"
+                        class="flex items-center gap-3 p-3 rounded-xl transition-all font-medium"
+                        :class="isActive('/cours') && !isActive('/cours/create') ? 'bg-blue-500 text-white' : 'text-gray-600 hover:bg-gray-100'"
+                    >
+                        <span class="text-xl">🛒</span>
+                        <span class="text-sm lg:text-base">Marketplace Cours</span>
+                    </Link>
+
+                    <!-- Publier un cours -->
+                    <Link
+                        v-if="$page.props.auth.user && $page.props.auth.user.canPublishCours"
+                        :href="route('cours.create')"
+
+                        class="flex items-center gap-3 p-3 rounded-xl transition-all font-medium"
+                        :class="isActive('/cours/create') ? 'bg-green-500 text-white' : 'text-gray-600 hover:bg-gray-100'"
+                    >
+                        <span class="text-xl">📚</span>
+                        <span class="text-sm lg:text-base">Publier un cours</span>
+                    </Link>
+
+                    <!-- Devenir Premium (étudiant non premium) -->
+                    <Link
+                        v-else-if="$page.props.auth.user && $page.props.auth.user.account_type === 'Etudiant'"
+                        :href="route('etudiant.premium.index')"
+                        class="flex items-center gap-3 p-3 rounded-xl transition-all font-medium bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600"
+                    >
+                        <span class="text-xl">💎</span>
+                        <span class="text-sm lg:text-base">Devenir Premium</span>
+                    </Link>
+
+                    <!-- Mes cours publiés (si auteur) -->
+                    <Link
+                        v-if="$page.props.auth.user && $page.props.auth.user.canPublishCours"
+                        :href="route('professeur.mes-cours')"
+                        class="flex items-center gap-3 p-3 rounded-xl transition-all font-medium"
+                        :class="isActive('/professeur/cours') ? 'bg-green-500 text-white' : 'text-gray-600 hover:bg-gray-100'"
+                    >
+                        <span class="text-xl">📖</span>
+                        <span class="text-sm lg:text-base">Mes cours publiés</span>
+                    </Link>
+
+                    <!-- Liens étudiants -->
                     <Link
                         :href="route('dashboard.redirect')"
                         class="flex items-center gap-3 p-3 rounded-xl transition-all font-medium"
@@ -213,20 +332,20 @@
                         :class="isActive('/etudiant/cours') ? 'bg-[#5b7ce6] text-white' : 'text-gray-600 hover:bg-gray-100'"
                     >
                         <span class="text-xl">📚</span>
-                        <span class="text-sm lg:text-base">Mes cours</span>
+                        <span class="text-sm lg:text-base">Mes cours suivis</span>
                     </Link>
 
                     <Link
                         :href="route('etudiant.devoirs.index')"
                         class="flex items-center gap-3 p-3 rounded-xl transition-all font-medium"
-                        :class="isActive('/etudiant/assignments') ? 'bg-[#5b7ce6] text-white' : 'text-gray-600 hover:bg-gray-100'"
+                        :class="isActive('/etudiant/devoirs') ? 'bg-[#5b7ce6] text-white' : 'text-gray-600 hover:bg-gray-100'"
                     >
                         <span class="text-xl">📝</span>
                         <span class="text-sm lg:text-base">Mes devoirs</span>
                     </Link>
 
                     <Link
-                        :href="route('etudiant.premium')"
+                        :href="route('etudiant.premium.index')"
                         class="flex items-center gap-3 p-3 rounded-xl transition-all font-medium"
                         :class="isActive('/etudiant/premium') ? 'bg-[#5b7ce6] text-white' : 'text-gray-600 hover:bg-gray-100'"
                     >
@@ -294,6 +413,12 @@ const userInitial = computed(() => {
 const isActive = (route) => {
     if (route === '/dashboard') {
         return page.url === '/dashboard';
+    }
+    if (route === '/cours' && page.url === '/cours') {
+        return true;
+    }
+    if (route === '/cours/create' && page.url === '/cours/create') {
+        return true;
     }
     return page.url.startsWith(route);
 };

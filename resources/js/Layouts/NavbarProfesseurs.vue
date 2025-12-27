@@ -137,7 +137,7 @@
                     </Link>
 
                     <Link
-                        :href="route('professeur.cours.index')"
+                        :href="route('professeur.mes-cours')"
                         class="sidebar-item group"
                         :class="{
         'active': $page.url === '/professeur/cours' ||
@@ -150,7 +150,7 @@
                     </Link>
 
                     <Link
-                        :href="route('professeur.cours.create')"
+                        :href="route('cours.create')"
                         class="sidebar-item group"
                         :class="{ 'active': $page.url.startsWith('/professeur/cours/create') }"
                     >
@@ -232,7 +232,7 @@
                     <span class="text-xs mt-1">Accueil</span>
                 </Link>
                 <Link
-                    :href="route('professeur.cours.index')"
+                    :href="route('professeur.mes-cours')"
                     class="flex flex-col items-center text-gray-600 hover:text-indigo-600"
                 >
                     <span class="text-xl">📚</span>

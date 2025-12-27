@@ -6,7 +6,7 @@
                 <!-- Bouton retour -->
                 <div class="mb-6">
                     <Link
-                        :href="route('professeur.cours.index')"
+                        :href="route('professeur.mes-cours')"
                         class="text-blue-600 hover:text-blue-800 flex items-center"
                     >
                         <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

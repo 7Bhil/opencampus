@@ -51,7 +51,7 @@
             <!-- Boutons d'action -->
             <div class="action-buttons flex flex-wrap gap-4">
                 <Link
-                    :href="route('professeur.cours.create')"
+                    :href="route('cours.create')"
                     class="btn-primary flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-300"
                 >
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -147,7 +147,7 @@
                     Mes cours récents
                 </h2>
                 <Link
-                    :href="route('professeur.cours.index')"
+                    :href="route('professeur.mes-cours')"
                     class="text-indigo-600 hover:text-indigo-800 text-sm font-medium flex items-center gap-2"
                 >
                     Voir tous
@@ -206,7 +206,7 @@
                 </svg>
                 <p class="text-gray-500 mt-2">Aucun cours publié pour le moment</p>
                 <Link
-                    :href="route('professeur.cours.create')"
+                    :href="route('cours.create')"
                     class="mt-4 inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors"
                 >
                     Créer votre premier cours

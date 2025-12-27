@@ -9,28 +9,35 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Cours extends Model
 {
     protected $fillable = [
-        'professeur_id',
+        'user_id', // CHANGÉ : professeur_id → user_id
         'titre',
         'matiere',
         'description',
         'fichier_path',
         'est_payant',
         'prix',
-        'est_public', // Utilisez est_public comme vous préférez
+        'est_public',
         'categorie',
         'nombre_vues',
-        // Note: supprimez 'est_actif' si vous ne l'utilisez pas
+        'statut', // AJOUTÉ : pour la modération des étudiants
     ];
 
     protected $casts = [
         'est_payant' => 'boolean',
-        'est_public' => 'boolean', // Utilisez seulement est_public
+        'est_public' => 'boolean',
         'prix' => 'decimal:2',
     ];
 
+    // CHANGÉ : relation avec User au lieu de seulement professeur
+    public function auteur(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    // MÉTHODE AJOUTÉE : pour la compatibilité avec l'ancien code
     public function professeur(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'professeur_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function likes(): HasMany
@@ -43,9 +50,14 @@ class Cours extends Model
         return $this->hasMany(Telechargement::class, 'cours_id');
     }
 
-    // Ajoutez cette méthode pour filtrer les cours publics
     public function scopePublic($query)
     {
         return $query->where('est_public', true);
+    }
+
+    // MÉTHODE AJOUTÉE : pour vérifier si c'est un professeur
+    public function estPublieParProfesseur()
+    {
+        return $this->auteur && $this->auteur->account_type === 'Professeur';
     }
 }

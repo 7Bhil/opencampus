@@ -2,92 +2,74 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
     protected $fillable = [
         'name',
         'email',
         'password',
         'account_type',
         'filiere',
+        'matricule',
+        'is_premium', // AJOUTÉ
+        'premium_until', // AJOUTÉ
+        'balance', // AJOUTÉ
     ];
 
-
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'is_premium' => 'boolean', // AJOUTÉ
+        'premium_until' => 'datetime', // AJOUTÉ
+        'balance' => 'decimal:2', // AJOUTÉ
+    ];
+
+    // AJOUTER ces méthodes :
+    public function cours()
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        return $this->hasMany(Cours::class, 'user_id');
     }
 
-    /**
-     * Relation avec les cours créés (pour les professeurs)
-     */
-    public function cours(): HasMany
-    {
-        return $this->hasMany(Cours::class, 'professeur_id');
+public function canPublishCours()
+{
+    \Log::info('=== canPublishCours CHECK ===');
+    \Log::info('User ID: ' . $this->id);
+    \Log::info('Account type: ' . $this->account_type);
+    \Log::info('Is premium: ' . ($this->is_premium ? 'yes' : 'no'));
+
+    if ($this->account_type === 'Professeur') {
+        \Log::info('→ Professeur → AUTORISÉ');
+        return true;
     }
 
-    /**
-     * Scope pour les étudiants
-     */
-    public function scopeEtudiants($query)
-    {
-        return $query->where('account_type', 'Etudiant');
+    if ($this->account_type === 'Etudiant' && $this->is_premium) {
+        \Log::info('→ Étudiant premium → AUTORISÉ');
+        return true;
     }
 
-    /**
-     * Scope pour les professeurs
-     */
-    public function scopeProfesseurs($query)
+    \Log::info('→ NON AUTORISÉ');
+    return false;
+}
+
+    public function hasPremiumAccess()
     {
-        return $query->where('account_type', 'Professeur');
+        return $this->is_premium === true;
     }
 
-    /**
-     * Vérifie si l'utilisateur est un étudiant
-     */
-    public function isEtudiant()
+    // Pour la compatibilité avec l'ancien code
+    public function coursEnseignes()
     {
-        return $this->account_type === 'Etudiant';
+        return $this->hasMany(Cours::class, 'user_id')
+                    ->where('account_type', 'Professeur');
     }
-
-    /**
-     * Vérifie si l'utilisateur est un professeur
-     */
-    public function isProfesseur()
-    {
-        return $this->account_type === 'Professeur';
-    }
-
 }

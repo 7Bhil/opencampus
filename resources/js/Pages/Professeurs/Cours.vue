@@ -9,7 +9,7 @@
                         <p class="text-gray-600 mt-2">Gérez et consultez vos cours publiés</p>
                     </div>
                     <Link
-                        :href="route('professeur.cours.create')"
+                        :href="route('cours.create')"
                         class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition"
                     >
                         + Publier un nouveau cours
@@ -178,7 +178,7 @@
                             <p class="mt-2 text-gray-500">Commencez par publier votre premier cours.</p>
                             <div class="mt-6">
                                 <Link
-                                    :href="route('professeur.cours.create')"
+                                    :href="route('cours.create')"
                                     class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
                                 >
                                     Publier un cours

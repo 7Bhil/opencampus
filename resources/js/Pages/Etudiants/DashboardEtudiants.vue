@@ -427,7 +427,7 @@
                   </Link>
 
                   <Link
-                    :href="route('etudiant.premium')"
+                    :href="route('etudiant.premium.index')"
                     class="flex flex-col items-center justify-center p-4 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors group"
                   >
                     <div class="w-10 h-10 bg-amber-50 rounded-full flex items-center justify-center mb-2 group-hover:bg-amber-100 transition-colors">

@@ -6,7 +6,7 @@
                 <!-- En-tête -->
                 <div class="mb-8">
                     <Link
-                        :href="route('professeur.cours.index')"
+                        :href="route('professeur.mes-cours')"
                         class="text-blue-600 hover:text-blue-800 flex items-center mb-4"
                     >
                         <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -273,7 +273,7 @@
 
                                 <div class="flex space-x-4">
                                     <Link
-                                        :href="route('professeur.cours.index')"
+                                        :href="route('professeur.mes-cours')"
                                         class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition"
                                     >
                                         Annuler

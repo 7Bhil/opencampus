@@ -12,12 +12,12 @@ class CoursController extends Controller
     public function index(Request $request)
     {
         // MODIFIÉ : sans withCount pour les relations qui n'existent pas
-        $cours = Cours::where('professeur_id', auth()->id())
+        $cours = Cours::where('user_id', auth()->id())
             ->latest()
             ->paginate(10);
 
         // Statistiques basiques
-        $userCours = Cours::where('professeur_id', auth()->id())->get();
+        $userCours = Cours::where('user_id', auth()->id())->get();
 
         $stats = [
             'total_cours' => $userCours->count(),
@@ -27,7 +27,7 @@ class CoursController extends Controller
         ];
 
         // Catégories uniques
-        $categories = Cours::where('professeur_id', auth()->id())
+        $categories = Cours::where('user_id', auth()->id())
             ->pluck('categorie')
             ->unique()
             ->values();
@@ -77,7 +77,7 @@ public function store(Request $request)
     }
 
     // Ajouter l'ID du professeur
-    $validated['professeur_id'] = auth()->id();
+    $validated['user_id'] = auth()->id();
 
     // Si non payant, prix = null
     if (!$validated['est_payant']) {
@@ -87,7 +87,7 @@ public function store(Request $request)
     // Créer le cours
     Cours::create($validated);
 
-    return redirect()->route('professeur.cours.index')
+    return redirect()->route('professeur.mes-cours')
         ->with('success', 'Cours publié avec succès !');
 }
 
@@ -137,7 +137,7 @@ public function update(Request $request, Cours $cours)
 
     $cours->update($validated);
 
-    return redirect()->route('professeur.cours.index')
+    return redirect()->route('professeur.mes-cours')
         ->with('success', 'Cours mis à jour avec succès !');
 }
 
@@ -153,7 +153,7 @@ public function destroy(Cours $cours)
 
     $cours->delete();
 
-    return redirect()->route('professeur.cours.index')
+    return redirect()->route('professeur.mes-cours')
         ->with('success', 'Cours supprimé avec succès !');
 }
 }

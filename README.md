@@ -271,7 +271,7 @@ Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
 - [BIAOU Hésed](https://github.com/AnisOp4z5Y5z)
 - [MINAWADE Aubierge](https://github.com/Aubie-46)
 - [VIDAGBANDJI Clarisse](https://github.com/cl-2-mich)
-- [GNIKPO Jean-Paul](https://github.com/JeanPaulGnikpo)
+- [GNIKPO Jean-Paul](https://github.com/Exauce13)
 - [YEKEDO Marielle](https://github.com/)
 - [Bhil .CHITOU](https://github.com/7Bhil)
 - [HOUNGUE Jolidon](https://github.com/joboy05)

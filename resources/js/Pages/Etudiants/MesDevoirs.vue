@@ -783,7 +783,7 @@ const submitAssignment = () => {
 }
 
 const viewSubmission = (assignment) => {
-  console.log('Voir la soumission:', assignment)
+  // Logic to view submission
 }
 
 // Initialisation

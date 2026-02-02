@@ -360,7 +360,6 @@ function submit() {
         },
         onError: (errors) => {
             // Gestion des erreurs si nécessaire
-            console.log('Erreurs:', errors)
         }
     })
 }

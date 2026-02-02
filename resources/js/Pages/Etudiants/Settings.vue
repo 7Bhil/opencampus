@@ -486,12 +486,6 @@ const accentColors = ref([
 // Méthodes
 const saveSettings = () => {
     // Ici, vous enverriez les données au backend
-    console.log('Paramètres sauvegardés:', {
-        profile: userProfile.value,
-        notifications: notifications.value,
-        security: security.value,
-        appearance: appearance.value
-    });
 
     // Simulation de succès
     alert('Paramètres enregistrés avec succès !');
@@ -514,10 +508,6 @@ const updatePassword = () => {
     }
 
     // Ici, vous enverriez la demande de changement au backend
-    console.log('Changement de mot de passe:', {
-        current: security.value.currentPassword,
-        new: security.value.newPassword
-    });
 
     alert('Mot de passe mis à jour avec succès !');
     security.value.currentPassword = '';
@@ -528,7 +518,6 @@ const updatePassword = () => {
 const terminateSession = (sessionId) => {
     activeSessions.value = activeSessions.value.filter(session => session.id !== sessionId);
     // Ici, vous enverriez la demande au backend
-    console.log('Session terminée:', sessionId);
     alert('Session déconnectée avec succès');
 };
 </script>

@@ -1,4 +1,3 @@
-<!-- resources/js/Pages/Welcome.vue -->
 <template>
     <div class="min-h-screen bg-gradient-to-br from-[#5b7ce6] via-[#9b6ec9] to-[#b567b8]">
         <!-- Navbar Simple -->

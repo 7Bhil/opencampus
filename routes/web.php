@@ -22,10 +22,8 @@ Route::get('/', function () {
     if (Auth::check()) {
         return redirect()->route('dashboard.redirect');
     }
-    // CORRIGE : Passe des props vides ou supprime Dashboard.vue
     return Inertia::render('Dashboard', [
-        'stats' => [], // Ajoute ceci
-        'auth' => ['user' => null] // Assure-toi que auth.user existe
+        'auth' => ['user' => Auth::user()] 
     ]);
 })->name('home');
 
@@ -45,31 +43,21 @@ Route::get('/dashboard', function () {
         return redirect()->route('login');
     }
 
-    // LOG IMPORTANT
-    \Log::info('=== DASHBOARD REDIRECTION ===');
-    \Log::info('User ID: ' . $user->id);
-    \Log::info('Account Type RAW: ' . $user->account_type);
-    \Log::info('Account Type LOWER: ' . strtolower($user->account_type));
-
-    // NORMALISATION (important)
-    $accountType = trim(strtolower($user->account_type));
+    $accountType = trim(strtolower($user->account_type ?? 'etudiant'));
 
     // Vérifie d'abord admin (case insensitive)
     if ($accountType === 'admin') {
-        \Log::info('REDIRECTING ADMIN TO: /admin/dashboard');
         return redirect()->route('admin.dashboard');
     }
 
     // Vérifie professeur
     if ($accountType === 'professeur') {
-        \Log::info('REDIRECTING PROFESSEUR TO: /professeur/dashboard');
         return redirect()->route('professeur.dashboard');
     }
 
     // Par défaut : étudiant
-    \Log::info('REDIRECTING DEFAULT TO: /etudiant/dashboard');
     return redirect()->route('etudiant.dashboard');
-})->name('dashboard.redirect');
+})->name('dashboard');
 
     /*
     |--------------------------------------------------------------------------

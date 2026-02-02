@@ -31,8 +31,6 @@ class DashboardController extends Controller
             })->where('statut', 'en_attente')->count(),
         ];
 
-        // Pour déboguer temporairement, ajoutez ce dd() :
-        // dd($stats);
 
         // Devoirs soumis RÉCENTS
         $devoirsRecents = Soumission::whereHas('devoir', function($query) use ($professeurId) {

@@ -8,20 +8,7 @@ return new class extends Migration
 {
     public function up()
     {
-        // Pour la table likes
-        if (Schema::hasTable('likes') && !Schema::hasColumn('likes', 'cours_id')) {
-            Schema::table('likes', function (Blueprint $table) {
-                $table->foreignId('cours_id')->constrained()->onDelete('cascade');
-                $table->unique(['user_id', 'cours_id']); // Optionnel: un like unique par utilisateur/cours
-            });
-        }
-
-        // Pour la table telechargements
-        if (Schema::hasTable('telechargements') && !Schema::hasColumn('telechargements', 'cours_id')) {
-            Schema::table('telechargements', function (Blueprint $table) {
-                $table->foreignId('cours_id')->constrained()->onDelete('cascade');
-            });
-        }
+        // Redundant migration, cours_id is already created in create_likes_table and create_telechargements_table migrations.
     }
 
     public function down()

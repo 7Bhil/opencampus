@@ -42,36 +42,20 @@ class User extends Authenticatable
 
 // app/Models/User.php
 // app/Models/User.php
-public function canPublishCours()
-{
-    $accountType = strtolower($this->account_type);
+    public function canPublishCours()
+    {
+        $accountType = strtolower($this->account_type);
 
-    // Debug
-    \Log::info('canPublishCours check:', [
-        'user_id' => $this->id,
-        'account_type' => $this->account_type,
-        'est_premium' => $this->est_premium,
-        'is_premium_boolean' => $this->est_premium === true || $this->est_premium === 1
-    ]);
+        // Les professeurs et admins peuvent toujours publier
+        if (in_array($accountType, ['professeur', 'admin'])) {
+            return true;
+        }
 
-    // Les professeurs et admins peuvent toujours publier
-    if (in_array($accountType, ['professeur', 'admin'])) {
-        \Log::info('Can publish: Professeur/Admin');
-        return true;
+        // Les étudiants doivent être premium
+        if ($accountType === 'etudiant') {
+            return (bool) $this->is_premium;
+        }
+
+        return false;
     }
-
-    // Les étudiants doivent être premium
-    if ($accountType === 'etudiant') {
-        // Vérifie si est_premium est vrai (booléen) ou 1 (entier)
-        $canPublish = $this->est_premium === true || $this->est_premium === 1;
-        \Log::info('Étudiant premium check:', [
-            'est_premium' => $this->est_premium,
-            'canPublish' => $canPublish
-        ]);
-        return $canPublish;
-    }
-
-    \Log::info('Can publish: false (default)');
-    return false;
-}
 }

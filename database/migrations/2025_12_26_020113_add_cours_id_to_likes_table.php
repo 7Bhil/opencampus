@@ -10,15 +10,9 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up()
-{
-    Schema::table('likes', function (Blueprint $table) {
-        // Si la colonne n'existe pas du tout
-        $table->foreignId('cours_id')->constrained()->onDelete('cascade');
-
-        // Ou si elle existe sous un autre nom, renommez-la
-        // $table->renameColumn('cour_id', 'cours_id');
-    });
-}
+    {
+        // Redundant migration, cours_id is already created in the create_likes_table migration.
+    }
 
 public function down()
 {

@@ -120,13 +120,13 @@ class AdminController extends Controller
         $request->validate([
             'account_type' => 'required|in:Etudiant,Professeur,Admin',
             'est_actif' => 'boolean',
-            'est_premium' => 'boolean',
+            'is_premium' => 'boolean',
         ]);
 
         $user->update([
             'account_type' => $request->account_type,
             'est_actif' => $request->boolean('est_actif'),
-            'est_premium' => $request->boolean('est_premium'),
+            'is_premium' => $request->boolean('is_premium'),
         ]);
 
         return back()->with('success', 'Statut utilisateur mis à jour.');

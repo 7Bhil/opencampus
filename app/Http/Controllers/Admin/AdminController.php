@@ -20,67 +20,42 @@ class AdminController extends Controller
     public function dashboard()
     {
         $stats = [
-            // Utilisateurs
-            'total_utilisateurs' => User::count(),
-            'etudiants' => User::where('account_type', 'Etudiant')->count(),
-            'professeurs' => User::where('account_type', 'Professeur')->count(),
-            'admins' => User::where('account_type', 'Admin')->count(),
-
-            // Cours
-            'total_cours' => Cours::count(),
-            'cours_publics' => Cours::where('est_public', true)->count(),
-            'cours_payants' => Cours::where('est_payant', true)->count(),
-            'cours_gratuits' => Cours::where('est_payant', false)->count(),
-
-            // Modération
-            'cours_en_attente' => Cours::where('est_modere', false)
-                                      ->where('est_approuve', false)
-                                      ->whereHas('auteur', function($q) {
-                                          $q->where('account_type', 'Etudiant');
-                                      })
-                                      ->count(),
-            'cours_approuves' => Cours::where('est_approuve', true)->count(),
-            'cours_rejetes' => Cours::where('est_modere', true)
-                                   ->where('est_approuve', false)
-                                   ->count(),
-
-            // Devoirs
-            'total_devoirs' => Devoir::count(),
-            'devoirs_actifs' => Devoir::where('est_actif', true)->count(),
-
-            // Transactions
-            'total_achats' => AchatCours::count(),
-            'revenu_total' => AchatCours::sum('montant'),
+            'totalUsers' => User::count(),
+            'totalCours' => Cours::count(),
+            'totalProfesseurs' => User::where('account_type', 'Professeur')->count(),
+            'coursAModerer' => Cours::where('est_modere', false)
+                                  ->where('est_approuve', false)
+                                  ->whereHas('auteur', function($q) {
+                                      $q->where('account_type', 'Etudiant');
+                                  })
+                                  ->count(),
         ];
 
-        // Cours récents (10 derniers)
-        $coursRecents = Cours::with('auteur')
-                            ->latest()
-                            ->take(10)
-                            ->get();
+        // Construction des activités récentes
+        $users = User::latest()->take(5)->get()->map(fn($u) => [
+            'type' => 'user',
+            'description' => "Nouvel utilisateur inscrit : {$u->name}",
+            'time' => $u->created_at->diffForHumans(),
+            'timestamp' => $u->created_at->timestamp,
+            'badge' => 'Inscription',
+        ]);
 
-        // Cours en attente de modération (5 derniers)
-        $coursEnAttente = Cours::where('est_modere', false)
-                              ->where('est_approuve', false)
-                              ->whereHas('auteur', function($q) {
-                                  $q->where('account_type', 'Etudiant');
-                              })
-                              ->with('auteur')
-                              ->latest()
-                              ->take(5)
-                              ->get();
+        $cours = Cours::with('auteur')->latest()->take(5)->get()->map(fn($c) => [
+            'type' => 'course',
+            'description' => "Nouveau cours publié : {$c->titre}",
+            'time' => $c->created_at->diffForHumans(),
+            'timestamp' => $c->created_at->timestamp,
+            'badge' => 'Cours',
+        ]);
 
-        // Nouveaux utilisateurs (7 derniers jours)
-        $nouveauxUtilisateurs = User::where('created_at', '>=', now()->subDays(7))
-                                   ->latest()
-                                   ->take(8)
-                                   ->get();
-
+        $recentActivities = $users->concat($cours)
+                                ->sortByDesc('timestamp')
+                                ->values()
+                                ->all();
+        
         return Inertia::render('Admin/Dashboard', [
             'stats' => $stats,
-            'coursRecents' => $coursRecents,
-            'coursEnAttente' => $coursEnAttente,
-            'nouveauxUtilisateurs' => $nouveauxUtilisateurs,
+            'recentActivities' => $recentActivities,
         ]);
     }
 

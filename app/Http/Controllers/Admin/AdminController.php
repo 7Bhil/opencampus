@@ -19,44 +19,65 @@ class AdminController extends Controller
      */
     public function dashboard()
     {
-        $stats = [
-            'totalUsers' => User::count(),
-            'totalCours' => Cours::count(),
-            'totalProfesseurs' => User::where('account_type', 'Professeur')->count(),
-            'coursAModerer' => Cours::where('est_modere', false)
-                                  ->where('est_approuve', false)
-                                  ->whereHas('auteur', function($q) {
-                                      $q->where('account_type', 'Etudiant');
+        try {
+            $stats = [
+                'totalUsers' => User::count(),
+                'totalCours' => Cours::count(),
+                'totalProfesseurs' => User::where('account_type', 'Professeur')->count(),
+                'coursAModerer' => Cours::where(function($q) {
+                                      $q->where('est_modere', false)
+                                        ->orWhereNull('est_modere');
+                                  })
+                                  ->where(function($q) {
+                                      $q->where('est_approuve', false)
+                                        ->orWhereNull('est_approuve');
                                   })
                                   ->count(),
-        ];
+            ];
 
-        // Construction des activités récentes
-        $users = User::latest()->take(5)->get()->map(fn($u) => [
-            'type' => 'user',
-            'description' => "Nouvel utilisateur inscrit : {$u->name}",
-            'time' => $u->created_at->diffForHumans(),
-            'timestamp' => $u->created_at->timestamp,
-            'badge' => 'Inscription',
-        ]);
+            // Construction des activités récentes (Safe)
+            $users = User::latest()->take(5)->get()->map(fn($u) => [
+                'type' => 'user',
+                'description' => "Nouvel utilisateur inscrit : " . ($u->name ?? 'Anonyme'),
+                'time' => $u->created_at ? $u->created_at->diffForHumans() : 'Date inconnue',
+                'timestamp' => $u->created_at ? $u->created_at->timestamp : 0,
+                'badge' => 'Inscription',
+            ]);
 
-        $cours = Cours::with('auteur')->latest()->take(5)->get()->map(fn($c) => [
-            'type' => 'course',
-            'description' => "Nouveau cours publié : {$c->titre}",
-            'time' => $c->created_at->diffForHumans(),
-            'timestamp' => $c->created_at->timestamp,
-            'badge' => 'Cours',
-        ]);
+            $cours = Cours::with('auteur')->latest()->take(5)->get()->map(fn($c) => [
+                'type' => 'course',
+                'description' => "Nouveau cours publié : " . ($c->titre ?? 'Sans titre'),
+                'time' => $c->created_at ? $c->created_at->diffForHumans() : 'Date inconnue',
+                'timestamp' => $c->created_at ? $c->created_at->timestamp : 0,
+                'badge' => 'Cours',
+            ]);
 
-        $recentActivities = $users->concat($cours)
-                                ->sortByDesc('timestamp')
-                                ->values()
-                                ->all();
-        
-        return Inertia::render('Admin/Dashboard', [
-            'stats' => $stats,
-            'recentActivities' => $recentActivities,
-        ]);
+            $recentActivities = $users->concat($cours)
+                                    ->sortByDesc('timestamp')
+                                    ->values()
+                                    ->all();
+            
+            return Inertia::render('Admin/Dashboard', [
+                'stats' => $stats,
+                'recentActivities' => $recentActivities,
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Erreur Dashboard Admin: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            // Fallback pour éviter le 500 fatal
+            return Inertia::render('Admin/Dashboard', [
+                'stats' => [
+                    'totalUsers' => 0,
+                    'totalCours' => 0,
+                    'totalProfesseurs' => 0,
+                    'coursAModerer' => 0
+                ],
+                'recentActivities' => [],
+                'error' => 'Erreur lors du chargement des statistiques : ' . $e->getMessage()
+            ]);
+        }
     }
 
     /**

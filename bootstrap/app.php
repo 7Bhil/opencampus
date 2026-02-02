@@ -20,6 +20,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'redirect.after.login' => \App\Http\Middleware\RedirectAfterLogin::class,
         ]);
 
+        $middleware->trustProxies(at: '*');
+
         // NE MODIFIEZ PAS le groupe 'web' - laissez-le par défaut
         // Laravel gère automatiquement les middlewares web par défaut
     })

@@ -10,6 +10,10 @@ class AppServiceProvider extends ServiceProvider
 {
     public function boot(): void
     {
+        if (config('app.env') === 'production') {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
+
         Inertia::share([
             'auth' => function () {
                 if (auth()->check()) {

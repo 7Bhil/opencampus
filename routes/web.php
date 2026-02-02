@@ -184,6 +184,7 @@ Route::prefix('cours')->name('cours.')->group(function () {
             Route::get('/users', [AdminController::class, 'users'])->name('users');
             Route::post('/users/{user}/update-status', [AdminController::class, 'updateUserStatus'])
                 ->name('users.update-status');
+            Route::delete('/users/{user}', [AdminController::class, 'deleteUser'])->name('users.delete');
 
             // Gestion des cours
             Route::get('/cours', [AdminController::class, 'cours'])->name('cours');

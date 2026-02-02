@@ -129,6 +129,37 @@ class AdminController extends Controller
     }
 
     /**
+     * Supprimer un utilisateur (admin seulement)
+     */
+    public function deleteUser(Request $request, User $user)
+    {
+        // Empêcher l'auto-suppression
+        if (Auth::id() === $user->id) {
+            return back()->with('error', 'Vous ne pouvez pas supprimer votre propre compte administrateur.');
+        }
+
+        // 1. Supprimer les fichiers physiques des cours (si professeur/étudiant premium)
+        foreach ($user->cours as $cours) {
+            if ($cours->fichier_path && Storage::disk('public')->exists($cours->fichier_path)) {
+                Storage::disk('public')->delete($cours->fichier_path);
+            }
+        }
+
+        // 2. Supprimer les fichiers physiques des soumissions (si étudiant)
+        $soumissions = \App\Models\Soumission::where('etudiant_id', $user->id)->get();
+        foreach ($soumissions as $soumission) {
+            if ($soumission->fichier_path && Storage::disk('public')->exists($soumission->fichier_path)) {
+                Storage::disk('public')->delete($soumission->fichier_path);
+            }
+        }
+
+        // 3. Supprimer l'utilisateur (la cascade en base gère les enregistrements liés)
+        $user->delete();
+
+        return back()->with('success', 'Utilisateur et toutes ses données associées ont été supprimés.');
+    }
+
+    /**
      * Liste des cours (tous)
      */
     public function cours(Request $request)

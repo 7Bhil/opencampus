@@ -33,23 +33,7 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        // Get the authenticated user
-        $user = Auth::user(); // Add this line to get the authenticated user
-
-        if ($user->email === 'admin@gmail.com') {
-            // Mettre à jour le compte comme Admin si ce n'est pas déjà fait
-            if ($user->account_type !== 'Admin') {
-                $user->account_type = 'Admin';
-                $user->save();
-            }
-            return redirect()->route('admin.dashboard');
-        }
-
-        if ($user->account_type === 'Professeur') {
-            return redirect()->route('professeur.dashboard');
-        }
-
-        return redirect()->intended(route('etudiant.dashboard', absolute: false));
+        return redirect()->intended(route('dashboard'));
     }
 
     /**

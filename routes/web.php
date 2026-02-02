@@ -20,7 +20,7 @@ use Inertia\Inertia;
 */
 Route::get('/', function () {
     if (Auth::check()) {
-        return redirect()->route('dashboard.redirect');
+        return redirect()->route('dashboard');
     }
     return Inertia::render('Dashboard', [
         'auth' => ['user' => Auth::user()] 

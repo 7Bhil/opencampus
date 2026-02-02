@@ -71,7 +71,7 @@
                 </Link>
 
                 <div class="pt-6 mt-6 border-t border-gray-200">
-                    <Link :href="route('dashboard.redirect')"
+                    <Link :href="route('dashboard')"
                           class="flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>

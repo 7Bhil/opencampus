@@ -43,7 +43,7 @@
 
                         <!-- Liens principaux -->
                         <Link
-                            :href="route('dashboard.redirect')"
+                            :href="route('dashboard')"
                             class="text-white font-medium hover:opacity-85 transition-opacity text-sm lg:text-base"
                             :class="{ 'border-b-2 border-white': $page.url.startsWith('/etudiant/dashboard') }"
                         >
@@ -209,7 +209,7 @@
 
                         <!-- Liens principaux -->
                         <Link
-                            :href="route('dashboard.redirect')"
+                            :href="route('dashboard')"
                             class="block px-3 py-2 rounded-md text-white font-medium hover:bg-white/20 transition-colors"
                             @click="closeMobileMenu"
                         >
@@ -321,7 +321,7 @@
 
                     <!-- Liens principaux -->
                     <Link
-                        :href="route('dashboard.redirect')"
+                        :href="route('dashboard')"
                         class="flex items-center gap-3 p-3 rounded-xl transition-all font-medium"
                         :class="isActive('/dashboard') ? 'bg-[#5b7ce6] text-white' : 'text-gray-600 hover:bg-gray-100'"
                     >

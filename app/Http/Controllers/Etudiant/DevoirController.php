@@ -109,14 +109,14 @@ class DevoirController extends Controller
                 'etudiant_id' => $etudiantId,
                 'fichier_path' => $fichierPath,
                 'commentaire' => $request->commentaire,
-                'statut' => 'en_attente',
-                'date_soumission' => now(),
+                'statut' => now()->gt($devoir->date_limite) ? 'rendu_en_retard' : 'en_attente',
             ]);
 
             return redirect()->route('etudiant.devoirs.show', $devoir)
                 ->with('success', 'Devoir soumis avec succès !');
 
         } catch (\Exception $e) {
+            \Log::error('Erreur soumission: ' . $e->getMessage());
             return back()->withErrors([
                 'error' => 'Une erreur est survenue lors de l\'envoi du fichier.'
             ]);

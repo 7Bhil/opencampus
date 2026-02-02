@@ -79,10 +79,10 @@
 
 Ce projet ne serait pas ce qu'il est sans l'effort collectif de cette équipe passionnée :
 
-- **[Bhil .CHITOU](https://github.com/7Bhil)** (Chef de Projet & Développeur Principal)
+- **[Bhil .CHITOU](https://github.com/7Bhil)** (Chef de Projet)
 - **[BIAOU Hésed](https://github.com/AnisOp4z5Y5z)**
 - **[MINAWADE Aubierge](https://github.com/Aubie-46)**
-- **[VIDAGBANDJI Clarisse](https://github.com/cl-2-mich) **
+- **[VIDAGBANDJI Clarisse](https://github.com/cl-2-mich)**
 - **[GNIKPO Jean-Paul](https://github.com/Exauce13)**
 - **[YEKEDO Marielle](https://github.com/)**
 - **[HOUNGUE Jolidon](https://github.com/joboy05)**
@@ -92,5 +92,10 @@ Ce projet ne serait pas ce qu'il est sans l'effort collectif de cette équipe pa
 
 ## 📄 Licence
 Ce projet est sous licence MIT.
+
+---
+
+© 2026 **Bhil .CHITOU**  
+Licensed under the MIT License
 
 **Développé avec ❤️ par l'équipe OpenCampus**

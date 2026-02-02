@@ -89,6 +89,7 @@ Route::get('/dashboard', function () {
                 Route::get('/', [PremiumController::class, 'index'])->name('index');
                 Route::post('/souscrire', [PremiumController::class, 'souscrire'])->name('souscrire');
                 Route::post('/annuler', [PremiumController::class, 'annuler'])->name('annuler');
+                Route::post('/deposer', [PremiumController::class, 'deposer'])->name('deposer');
             });
 
             // Autres
@@ -122,6 +123,7 @@ Route::prefix('cours')->name('cours.')->group(function () {
     // Vue d'un cours spécifique
     Route::get('/{cours}', [CoursController::class, 'show'])->name('show');
     Route::get('/{cours}/download', [CoursController::class, 'download'])->name('download');
+    Route::post('/{cours}/acheter', [\App\Http\Controllers\AchatController::class, 'acheter'])->name('acheter');
 
     // Routes protégées (sauf /create qui est déjà géré dans le contrôleur)
     Route::middleware(['canPublish'])->group(function () {

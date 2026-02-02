@@ -35,13 +35,56 @@ class PremiumController extends Controller
             'duree' => 'required|in:1,3,6,12',
         ]);
 
-        // Logique de souscription...
-        $user->is_premium = true;
-        $user->premium_until = now()->addMonths($request->duree);
-        $user->save();
+        $prices = [
+            1 => 1000,
+            3 => 2500,
+            6 => 4500,
+            12 => 8000,
+        ];
 
-        return redirect()->route('etudiant.premium.index')
-            ->with('success', 'Abonnement premium activé !');
+        $prix = $prices[$request->duree];
+
+        if ($user->balance < $prix) {
+            return redirect()->route('etudiant.premium.index')
+                ->with('error', 'Solde insuffisant (Prix: ' . $prix . ' f). Veuillez recharger votre compte.');
+        }
+
+        try {
+            \Illuminate\Support\Facades\DB::transaction(function () use ($user, $prix, $request) {
+                // Déduire le solde
+                $user->decrement('balance', $prix);
+
+                // Activer le premium
+                $dejaPremium = $user->is_premium && $user->premium_until && $user->premium_until->gt(now());
+                $startDate = $dejaPremium ? $user->premium_until : now();
+
+                $user->is_premium = true;
+                $user->premium_until = $startDate->addMonths($request->duree);
+                $user->save();
+            });
+
+            return redirect()->route('etudiant.premium.index')
+                ->with('success', 'Abonnement premium activé avec succès !');
+        } catch (\Exception $e) {
+            \Log::error('Erreur souscription premium: ' . $e->getMessage());
+            return redirect()->route('etudiant.premium.index')
+                ->with('error', 'Une erreur est survenue lors de la souscription.');
+        }
+    }
+
+    /**
+     * Ajouter des fonds (Simulé pour le test)
+     */
+    public function deposer(Request $request)
+    {
+        $request->validate([
+            'montant' => 'required|numeric|min:100|max:100000',
+        ]);
+
+        $user = Auth::user();
+        $user->increment('balance', $request->montant);
+
+        return back()->with('success', $request->montant . ' f ajoutés à votre solde !');
     }
 
     /**
@@ -57,6 +100,8 @@ class PremiumController extends Controller
         }
 
         $user->is_premium = false;
+        // Optionnel : On garde premium_until mais on marque comme "ne pas renouveler"
+        // Ici on simplifie en coupant tout
         $user->premium_until = null;
         $user->save();
 

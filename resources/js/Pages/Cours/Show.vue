@@ -72,6 +72,19 @@
             </div>
         </div>
 
+        <!-- Messages flash -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+            <div v-if="$page.props.flash?.success" class="p-4 bg-green-50 border border-green-200 rounded-lg text-green-800">
+                {{ $page.props.flash.success }}
+            </div>
+            <div v-if="$page.props.flash?.error" class="p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
+                {{ $page.props.flash.error }}
+            </div>
+            <div v-if="$page.props.flash?.info" class="p-4 bg-blue-50 border border-blue-200 rounded-lg text-blue-800">
+                {{ $page.props.flash.info }}
+            </div>
+        </div>
+
         <!-- Contenu principal -->
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">

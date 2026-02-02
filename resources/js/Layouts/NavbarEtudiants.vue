@@ -386,10 +386,28 @@
             </aside>
 
             <!-- Contenu Principal -->
-            <main class="flex-1 lg:ml-64 min-h-screen bg-gray-50 w-full">
-                <div class="p-3 sm:p-4 md:p-6 lg:p-8 w-full max-w-full">
+            <main class="flex-1 lg:ml-64 min-h-screen bg-gray-50 w-full flex flex-col">
+                <div class="p-3 sm:p-4 md:p-6 lg:p-8 w-full max-w-full flex-grow">
                     <slot />
                 </div>
+
+                <!-- Footer -->
+                <footer class="bg-white border-t border-gray-100 py-6 px-4 sm:px-6 lg:px-8">
+                    <div class="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-500 font-medium">
+                        <div class="flex items-center gap-2">
+                            <span>© 2026</span>
+                            <span class="text-gray-900 font-bold">Bhil$</span>
+                        </div>
+                        <div class="flex items-center gap-6">
+                            <span class="flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                                OpenCampus v1.1.0
+                            </span>
+                            <span class="text-gray-300">|</span>
+                            <span>Licensed under the MIT License</span>
+                        </div>
+                    </div>
+                </footer>
             </main>
         </div>
     </div>

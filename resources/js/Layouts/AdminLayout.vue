@@ -150,42 +150,59 @@
             </header>
 
             <!-- Page content -->
-            <main class="p-4 sm:p-6 lg:p-8">
+            <main class="p-4 sm:p-6 lg:p-8 flex-1 flex flex-col">
                 <!-- Flash messages -->
-                <transition
-                    enter-active-class="transition ease-out duration-300"
-                    enter-from-class="opacity-0 translate-y-2"
-                    enter-to-class="opacity-100 translate-y-0"
-                    leave-active-class="transition ease-in duration-200"
-                    leave-from-class="opacity-100"
-                    leave-to-class="opacity-0">
-                    <div v-if="$page.props.flash?.success"
-                         class="mb-6 flex items-center space-x-3 p-4 bg-green-50 border border-green-200 rounded-lg">
-                        <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                        <p class="text-sm font-medium text-green-800">{{ $page.props.flash.success }}</p>
-                    </div>
-                </transition>
+                <div class="flex-grow">
+                    <transition
+                        enter-active-class="transition ease-out duration-300"
+                        enter-from-class="opacity-0 translate-y-2"
+                        enter-to-class="opacity-100 translate-y-0"
+                        leave-active-class="transition ease-in duration-200"
+                        leave-from-class="opacity-100"
+                        leave-to-class="opacity-0">
+                        <div v-if="$page.props.flash?.success"
+                             class="mb-6 flex items-center space-x-3 p-4 bg-green-50 border border-green-200 rounded-lg">
+                            <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <p class="text-sm font-medium text-green-800">{{ $page.props.flash.success }}</p>
+                        </div>
+                    </transition>
 
-                <transition
-                    enter-active-class="transition ease-out duration-300"
-                    enter-from-class="opacity-0 translate-y-2"
-                    enter-to-class="opacity-100 translate-y-0"
-                    leave-active-class="transition ease-in duration-200"
-                    leave-from-class="opacity-100"
-                    leave-to-class="opacity-0">
-                    <div v-if="$page.props.flash?.error"
-                         class="mb-6 flex items-center space-x-3 p-4 bg-red-50 border border-red-200 rounded-lg">
-                        <svg class="w-5 h-5 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                        <p class="text-sm font-medium text-red-800">{{ $page.props.flash.error }}</p>
-                    </div>
-                </transition>
+                    <transition
+                        enter-active-class="transition ease-out duration-300"
+                        enter-from-class="opacity-0 translate-y-2"
+                        enter-to-class="opacity-100 translate-y-0"
+                        leave-active-class="transition ease-in duration-200"
+                        leave-from-class="opacity-100"
+                        leave-to-class="opacity-0">
+                        <div v-if="$page.props.flash?.error"
+                             class="mb-6 flex items-center space-x-3 p-4 bg-red-50 border border-red-200 rounded-lg">
+                            <svg class="w-5 h-5 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <p class="text-sm font-medium text-red-800">{{ $page.props.flash.error }}</p>
+                        </div>
+                    </transition>
 
-                <!-- Page content slot -->
-                <slot />
+                    <!-- Page content slot -->
+                    <slot />
+                </div>
+
+                <!-- Footer -->
+                <footer class="mt-12 py-6 border-t border-gray-100">
+                    <div class="flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-500 font-medium">
+                        <div class="flex items-center gap-2">
+                            <span>© 2026</span>
+                            <span class="text-gray-900 font-bold uppercase tracking-wider">Bhil$</span>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <span>Administration OpenCampus v1.1.0</span>
+                            <span class="text-gray-300">•</span>
+                            <span>Licensed under MIT</span>
+                        </div>
+                    </div>
+                </footer>
             </main>
         </div>
     </div>

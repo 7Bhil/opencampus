@@ -86,14 +86,27 @@
                         </div>
                     </div>
 
-                    <div class="mt-4 p-3 bg-blue-50 rounded-lg">
-                        <p class="text-gray-700">
-                            <strong>Solde disponible :</strong>
-                            <span class="font-bold text-blue-700">{{ $page.props.auth.user.balance }} f</span>
-                        </p>
-                        <p class="text-sm text-gray-600 mt-1">
-                            Le montant sera déduit de votre solde lors de la souscription
-                        </p>
+                    <div class="mt-4 p-3 bg-blue-50 rounded-lg flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-700">
+                                <strong>Solde disponible :</strong>
+                                <span class="font-bold text-blue-700">{{ $page.props.auth.user.balance }} f</span>
+                            </p>
+                            <p class="text-sm text-gray-600 mt-1">
+                                Le montant sera déduit de votre solde lors de la souscription
+                            </p>
+                        </div>
+                        
+                        <!-- Mini-formulaire de dépôt pour le test -->
+                        <div class="flex items-center space-x-2">
+                            <input type="number" v-model="deposerMontant" 
+                                   class="w-24 px-2 py-1 border rounded text-sm" 
+                                   placeholder="Montant">
+                            <button @click="deposer" 
+                                    class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700">
+                                Recharger
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -147,18 +160,18 @@
 <!-- resources/js/Pages/Etudiants/Premium.vue -->
 <script setup>
 import { ref, computed } from 'vue'
-import { useForm, usePage } from '@inertiajs/vue3' // AJOUTEZ usePage
+import { useForm, usePage, router } from '@inertiajs/vue3' // AJOUTEZ usePage et router
 import EtudiantLayout from '../../Layouts/NavbarEtudiants.vue'
 
 // Obtenez $page via usePage()
 const page = usePage()
 
-// Formules d'abonnement
+// Formules d'abonnement (Synchronisées avec le backend)
 const formules = [
     { duree: 1, prix: 1000, economie: '' },
-    { duree: 3, prix: 2700, economie: '-10%' },
-    { duree: 6, prix: 4800, economie: '-20%' },
-    { duree: 12, prix: 8400, economie: '-30%' },
+    { duree: 3, prix: 2500, economie: '-16%' },
+    { duree: 6, prix: 4500, economie: '-25%' },
+    { duree: 12, prix: 8000, economie: '-33%' },
 ]
 
 const formuleSelectionnee = ref(null)
@@ -213,6 +226,17 @@ const annulerAbonnement = () => {
     if (confirm('Êtes-vous sûr de vouloir annuler votre abonnement premium ?\n\nVous ne pourrez plus publier de cours.')) {
         form.post(route('etudiant.premium.annuler'))
     }
+}
+
+const deposerMontant = ref(2000)
+const deposer = () => {
+    router.post(route('etudiant.premium.deposer'), {
+        montant: deposerMontant.value
+    }, {
+        onSuccess: () => {
+            // Pas besoin de reset si on veut faire plusieurs tests
+        }
+    })
 }
 
 const formatDate = (dateString) => {

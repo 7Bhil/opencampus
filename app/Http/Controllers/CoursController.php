@@ -158,50 +158,7 @@ public function mesCours()
         'cours' => $cours,
     ]);
 }
-public function coursAModerer()
-{
-    // Cours soumis par les étudiants, non modérés
-    $cours = Cours::where('est_modere', false)
-        ->where('est_public', false)
-        ->whereHas('auteur', function($q) {
-            $q->where('account_type', 'Etudiant');
-        })
-        ->with('auteur')
-        ->latest()
-        ->get();
-
-    return Inertia::render('Admin/CoursAModerer', [
-        'cours' => $cours,
-    ]);
-}
-
-public function approuver(Cours $cours)
-{
-    $cours->update([
-        'est_public' => true,
-        'est_modere' => true,
-        'est_approuve' => true,
-        'approuve_le' => now(),
-        'approuve_par' => auth()->id(),
-    ]);
-
-    // Optionnel : Envoyer une notification à l'étudiant
-
-    return back()->with('success', 'Cours approuvé et publié !');
-}
-
-public function rejeter(Cours $cours)
-{
-    $cours->update([
-        'est_modere' => true,
-        'est_approuve' => false,
-    ]);
-
-    // Optionnel : Envoyer une notification avec motif du rejet
-
-    return back()->with('success', 'Cours rejeté.');
-}
-public function edit(Cours $cours)
+    public function edit(Cours $cours)
 {
     // Vérifie que l'utilisateur peut éditer (propriétaire ou admin)
     if (!auth()->check() || (auth()->id() !== $cours->user_id && auth()->user()->account_type !== 'Admin')) {

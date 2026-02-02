@@ -10,26 +10,34 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // Créer l'admin principal
-        User::create([
-            'name' => 'Admin Principal',
-            'email' => '7bhilal.chitou7@gmail.com',
-            'password' => bcrypt('Bh7777777'),
-            'account_type' => 'Admin',
-        ]);
+        User::firstOrCreate(
+            ['email' => '7bhilal.chitou7@gmail.com'],
+            [
+                'name' => 'Admin Principal',
+                'password' => bcrypt('Bh7777777'),
+                'account_type' => 'Admin',
+            ]
+        );
 
         // Créer des utilisateurs de test
-        User::factory()->create([
-            'name' => 'Étudiant Test',
-            'email' => 'etudiant@example.com',
-            'account_type' => 'Etudiant',
-            'filiere' => 'IG',
-        ]);
+        User::firstOrCreate(
+            ['email' => 'etudiant@example.com'],
+            [
+                'name' => 'Étudiant Test',
+                'account_type' => 'Etudiant',
+                'filiere' => 'IG',
+                'password' => bcrypt('password'),
+            ]
+        );
 
-        User::factory()->create([
-            'name' => 'Professeur Test',
-            'email' => 'professeur@example.com',
-            'account_type' => 'Professeur',
-        ]);
+        User::firstOrCreate(
+            ['email' => 'professeur@example.com'],
+            [
+                'name' => 'Professeur Test',
+                'account_type' => 'Professeur',
+                'password' => bcrypt('password'),
+            ]
+        );
 
         // Créer d'autres utilisateurs
         User::factory(10)->create();

@@ -63,7 +63,7 @@
    ```
 3. **Base de données**
    ```bash
-   touch database/database.sqlite # Si SQLite
+   touch database/database.postgresql
    php artisan migrate --seed
    ```
 4. **Lancement**
@@ -79,7 +79,7 @@
 
 Ce projet ne serait pas ce qu'il est sans l'effort collectif de cette équipe passionnée :
 
-- **[Bhil .CHITOU](https://github.com/7Bhil)** (Chef de Projet)
+- **[Bhil. CHITOU](https://github.com/7Bhil)** (Chef de Projet)
 - **[BIAOU Hésed](https://github.com/AnisOp4z5Y5z)**
 - **[MINAWADE Aubierge](https://github.com/Aubie-46)**
 - **[VIDAGBANDJI Clarisse](https://github.com/cl-2-mich)**
@@ -95,7 +95,7 @@ Ce projet est sous licence MIT.
 
 ---
 
-© 2026 **Bhil .CHITOU**  
+© 2026 **Bhil. CHITOU**  
 Licensed under the MIT License
 
-**Développé avec ❤️ par l'équipe OpenCampus**
+**Développé par l'équipe OpenCampus**

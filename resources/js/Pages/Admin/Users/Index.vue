@@ -223,7 +223,7 @@ const editBalance = (user) => {
 
 const saveBalance = () => {
     if (selectedUser.value) {
-        form.put(route('admin.users.update-status', selectedUser.value.id), {
+        form.put(route('admin.users.update-status', { user_id: selectedUser.value.id }), {
             balance: newBalance.value
         }, {
             onSuccess: () => {
@@ -234,7 +234,7 @@ const saveBalance = () => {
 }
 
 const updateUserStatus = (userId, field, value) => {
-    form.put(route('admin.users.update-status', userId), {
+    form.put(route('admin.users.update-status', { user_id: userId }), {
         [field]: value
     })
 }
@@ -248,7 +248,7 @@ const resetPassword = (userId) => {
 
 const confirmDelete = (userId) => {
     if (confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ? Tous ses cours seront aussi supprimés.')) {
-        router.delete(route('admin.users.delete', userId))
+        router.delete(route('admin.users.delete', { user_id: userId }))
     }
 }
 

@@ -111,41 +111,46 @@ class AdminController extends Controller
     /**
      * Mettre à jour le statut d'un utilisateur
      */
-    public function updateUserStatus(Request $request, User $user)
+    public function updateUserStatus(Request $request, $user_id)
     {
+        $user = User::findOrFail($user_id);
+        
         $request->validate([
-            'account_type' => 'required|in:Etudiant,Professeur,Admin',
-            'est_actif' => 'boolean',
-            'is_premium' => 'boolean',
+            'account_type' => 'nullable|in:Etudiant,Professeur,Admin',
+            'is_premium' => 'nullable|boolean',
+            'balance' => 'nullable|numeric|min:0',
         ]);
 
-        $user->update([
-            'account_type' => $request->account_type,
-            'est_actif' => $request->boolean('est_actif'),
-            'is_premium' => $request->boolean('is_premium'),
-        ]);
+        $data = [];
+        if ($request->has('account_type')) $data['account_type'] = $request->account_type;
+        if ($request->has('is_premium')) $data['is_premium'] = $request->boolean('is_premium');
+        if ($request->has('balance')) $data['balance'] = $request->balance;
 
-        return back()->with('success', 'Statut utilisateur mis à jour.');
+        $user->update($data);
+
+        return back()->with('success', 'Utilisateur mis à jour avec succès.');
     }
 
     /**
      * Supprimer un utilisateur (admin seulement)
      */
-    public function deleteUser(Request $request, User $user)
+    public function deleteUser(Request $request, $user_id)
     {
+        $user = User::findOrFail($user_id);
+
         // Empêcher l'auto-suppression
         if (Auth::id() === $user->id) {
             return back()->with('error', 'Vous ne pouvez pas supprimer votre propre compte administrateur.');
         }
 
-        // 1. Supprimer les fichiers physiques des cours (si professeur/étudiant premium)
+        // 1. Supprimer les fichiers physiques des cours
         foreach ($user->cours as $cours) {
             if ($cours->fichier_path && Storage::disk('public')->exists($cours->fichier_path)) {
                 Storage::disk('public')->delete($cours->fichier_path);
             }
         }
 
-        // 2. Supprimer les fichiers physiques des soumissions (si étudiant)
+        // 2. Supprimer les fichiers physiques des soumissions
         $soumissions = \App\Models\Soumission::where('etudiant_id', $user->id)->get();
         foreach ($soumissions as $soumission) {
             if ($soumission->fichier_path && Storage::disk('public')->exists($soumission->fichier_path)) {
@@ -153,7 +158,7 @@ class AdminController extends Controller
             }
         }
 
-        // 3. Supprimer l'utilisateur (la cascade en base gère les enregistrements liés)
+        // 3. Supprimer l'utilisateur
         $user->delete();
 
         return back()->with('success', 'Utilisateur et toutes ses données associées ont été supprimés.');
